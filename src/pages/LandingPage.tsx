@@ -156,7 +156,7 @@ export default function LandingPage() {
                         <a href="/terms" className="hover:text-[#246df3]">
                             Terms
                         </a>
-                        <a href="mailto:support@renewly.app" className="hover:text-[#246df3]">
+                        <a href="/support" className="hover:text-[#246df3]">
                             Support
                         </a>
                     </div>
