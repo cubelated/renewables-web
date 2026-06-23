@@ -1,12 +1,9 @@
-import type React from "react";
 import {
     Bell,
     CalendarDays,
-    CheckCircle2,
     ChevronRight,
     Clock3,
     Cloud,
-    FileText,
     ShieldCheck,
     Sparkles,
 } from "lucide-react";
