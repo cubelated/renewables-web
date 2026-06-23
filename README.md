@@ -1,90 +1,156 @@
-# React + Vite + Hono + Cloudflare Workers
+# Renewly Web
 
-[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/cloudflare/templates/tree/main/vite-react-template)
+Official landing page for **Renewly**, a modern expiry tracker designed to help users stay ahead of document renewals, subscriptions, licenses, memberships, warranties, and other important deadlines.
 
-This template provides a minimal setup for building a React application with TypeScript and Vite, designed to run on Cloudflare Workers. It features hot module replacement, ESLint integration, and the flexibility of Workers deployments.
+## About Renewly
 
-![React + TypeScript + Vite + Cloudflare Workers](https://imagedelivery.net/wSMYJvS3Xw-n339CbDyDIA/fc7b4b62-442b-4769-641b-ad4422d74300/public)
+Renewly helps individuals organize and track:
 
-<!-- dash-content-start -->
+* Passports
+* National IDs
+* Driver licenses
+* Insurance policies
+* Memberships
+* Subscriptions
+* Certifications
+* Warranties
+* Other recurring renewals
 
-🚀 Supercharge your web development with this powerful stack:
+Users receive reminders before important dates and can view upcoming deadlines through a clean and intuitive interface.
 
-- [**React**](https://react.dev/) - A modern UI library for building interactive interfaces
-- [**Vite**](https://vite.dev/) - Lightning-fast build tooling and development server
-- [**Hono**](https://hono.dev/) - Ultralight, modern backend framework
-- [**Cloudflare Workers**](https://developers.cloudflare.com/workers/) - Edge computing platform for global deployment
+## Features
 
-### ✨ Key Features
+### Landing Page
 
-- 🔥 Hot Module Replacement (HMR) for rapid development
-- 📦 TypeScript support out of the box
-- 🛠️ ESLint configuration included
-- ⚡ Zero-config deployment to Cloudflare's global network
-- 🎯 API routes with Hono's elegant routing
-- 🔄 Full-stack development setup
-- 🔎 Built-in Observability to monitor your Worker
+* Modern responsive design
+* Mobile-first experience
+* Download links for mobile applications
+* Product showcase and screenshots
+* Feature overview
 
-Get started in minutes with local development or deploy directly via the Cloudflare dashboard. Perfect for building modern, performant web applications at the edge.
+### Legal Pages
 
-<!-- dash-content-end -->
+* Privacy Policy
+* Terms of Service
+* Support Page
+* Account Deletion Instructions
+
+### Performance
+
+* Static site generation
+* Optimized assets
+* Fast global delivery through Cloudflare Pages
+
+## Technology Stack
+
+* React
+* TypeScript
+* Vite
+* Tailwind CSS
+* Cloudflare Pages
+* Lucide React Icons
 
 ## Getting Started
 
-To start a new project with this template, run:
-
-```bash
-npm create cloudflare@latest -- --template=cloudflare/templates/vite-react-template
-```
-
-A live deployment of this template is available at:
-[https://react-vite-template.templates.workers.dev](https://react-vite-template.templates.workers.dev)
-
-## Development
-
-Install dependencies:
+### Install Dependencies
 
 ```bash
 npm install
 ```
 
-Start the development server with:
+### Run Development Server
 
 ```bash
 npm run dev
 ```
 
-Your application will be available at [http://localhost:5173](http://localhost:5173).
+The application will be available at:
 
-## Production
+```text
+http://localhost:5173
+```
 
-Build your project for production:
+### Build Production Assets
 
 ```bash
 npm run build
 ```
 
-Preview your build locally:
+### Preview Production Build
 
 ```bash
 npm run preview
 ```
 
-Deploy your project to Cloudflare Workers:
+## Project Structure
 
-```bash
-npm run build && npm run deploy
+```text
+src/
+├── pages/
+│   ├── LandingPage.tsx
+│   ├── PrivacyPolicyPage.tsx
+│   ├── TermsPage.tsx
+│   └── SupportPage.tsx
+│
+├── components/
+│   └── LegalLayout.tsx
+│
+├── App.tsx
+└── main.tsx
+
+public/
+├── logo.png
+├── app-phone.png
+├── google-play-logo.svg
+└── apple-logo.png
 ```
 
-Monitor your workers:
+## Deployment
+
+This project is designed for deployment on Cloudflare Pages.
+
+### Build Command
 
 ```bash
-npx wrangler tail
+npm run build
 ```
 
-## Additional Resources
+### Output Directory
 
-- [Cloudflare Workers Documentation](https://developers.cloudflare.com/workers/)
-- [Vite Documentation](https://vitejs.dev/guide/)
-- [React Documentation](https://reactjs.org/)
-- [Hono Documentation](https://hono.dev/)
+```text
+dist
+```
+
+## Support
+
+For support, questions, bug reports, or account deletion requests:
+
+**Email:** [cubelated@gmail.com](mailto:cubelated@gmail.com)
+
+## Privacy
+
+Renewly is committed to protecting user privacy.
+
+Privacy Policy:
+
+```text
+/privacy
+```
+
+Terms of Service:
+
+```text
+/terms
+```
+
+Support:
+
+```text
+/support
+```
+
+## License
+
+Copyright © 2026 Renewly.
+
+All rights reserved.

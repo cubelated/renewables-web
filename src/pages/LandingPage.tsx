@@ -1,167 +1,412 @@
+import type React from "react";
+import {
+    Bell,
+    CalendarDays,
+    CheckCircle2,
+    ChevronRight,
+    Clock3,
+    Cloud,
+    FileText,
+    ShieldCheck,
+    Sparkles,
+} from "lucide-react";
+
 const GOOGLE_PLAY_URL = "#";
 const APP_STORE_URL = "#";
 
 const features = [
     {
+        icon: Clock3,
         title: "Expiry Tracking",
-        description: "Track passports, IDs, licenses, insurance, subscriptions, and renewals.",
+        description:
+            "Track passports, IDs, licenses, insurance policies, subscriptions, warranties, and renewals.",
     },
     {
+        icon: Bell,
         title: "Smart Reminders",
-        description: "Get notified before important dates so nothing slips through.",
+        description:
+            "Get timely reminders before important dates so renewals do not slip through.",
     },
     {
+        icon: CalendarDays,
         title: "Calendar View",
-        description: "See upcoming renewals and deadlines in a clean timeline.",
+        description:
+            "See upcoming renewals and deadlines in a clean, easy-to-scan timeline.",
+    },
+];
+
+const benefits = [
+    {
+        icon: Bell,
+        title: "Smart reminders",
+    },
+    {
+        icon: CalendarDays,
+        title: "Calendar view",
+    },
+    {
+        icon: ShieldCheck,
+        title: "Organized records",
+    },
+    {
+        icon: Cloud,
+        title: "Cloud sync",
+    },
+];
+
+const screenshots = [
+    {
+        src: "/screenshot-template.jpg",
+        alt: "Renewly template screen",
+        title: "Templates",
+    },
+    {
+        src: "/screenshot-category.jpg",
+        alt: "Renewly category screen",
+        title: "Categories",
+    },
+    {
+        src: "/screenshot-calendar.jpg",
+        alt: "Renewly calendar screen",
+        title: "Calendar",
     },
 ];
 
 export default function LandingPage() {
     return (
-        <main className="min-h-screen bg-[#f7fbff] text-slate-950">
-            <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
-                <a href="/" className="flex items-center gap-3">
+        <main className="relative min-h-screen overflow-hidden bg-[#f7fbff] text-slate-950">
+            <BackgroundDecor />
+
+            <nav className="relative z-20 mx-auto flex max-w-7xl items-center justify-between px-6 py-6">
+                <a href="/" className="flex items-center gap-3" aria-label="Renewly home">
                     <img
                         src="/logo.png"
                         alt="Renewly logo"
-                        className="h-10 w-10 rounded-xl"
+                        className="h-11 w-11 rounded-xl shadow-md shadow-blue-500/20"
                     />
-                    <span className="text-xl font-bold tracking-tight">Renewly</span>
+                    <span className="text-2xl font-black tracking-tight">Renewly</span>
                 </a>
 
-                <div className="flex items-center gap-6 text-sm font-medium text-slate-600">
-                    <a href="#features" className="hover:text-[#246df3]">Features</a>
-                    <a href="/privacy" className="hover:text-[#246df3]">Privacy</a>
+                <div className="hidden items-center gap-8 text-sm font-semibold text-slate-700 md:flex">
+                    <a href="#features" className="transition hover:text-[#246df3]">
+                        Features
+                    </a>
+                    <a href="#screenshots" className="transition hover:text-[#246df3]">
+                        Screenshots
+                    </a>
+                    <a href="/privacy" className="transition hover:text-[#246df3]">
+                        Privacy
+                    </a>
+                    <a href="/support" className="transition hover:text-[#246df3]">
+                        Support
+                    </a>
                 </div>
             </nav>
 
-            <section className="mx-auto grid max-w-7xl items-center gap-12 px-6 pb-20 pt-16 lg:grid-cols-2 lg:pt-24">
+            <section className="relative z-10 mx-auto grid max-w-7xl items-center gap-14 px-6 pb-24 pt-10 lg:grid-cols-2 lg:pb-32 lg:pt-20">
                 <div>
-                    <div className="inline-flex rounded-full border border-[#246df3]/20 bg-[#246df3]/10 px-4 py-2 text-sm font-semibold text-[#246df3]">
-                        Life admin made simple
+                    <div className="inline-flex items-center gap-2 rounded-full border border-[#246df3]/15 bg-white/75 px-4 py-2 text-sm font-black text-[#246df3] shadow-sm backdrop-blur">
+                        <Sparkles size={16} />
+                        Expiry dates made easy
                     </div>
 
                     <h1 className="mt-8 max-w-3xl text-5xl font-black tracking-tight text-slate-950 sm:text-6xl lg:text-7xl">
-                        Never miss an expiry date again.
+                        Never miss an{" "}
+                        <span className="bg-gradient-to-r from-[#246df3] via-[#4458ff] to-[#7a5cff] bg-clip-text text-transparent">
+                            expiry date
+                        </span>{" "}
+                        again.
                     </h1>
 
-                    <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600">
-                        Renewly helps you track documents, renewals, subscriptions, and
-                        important deadlines with reminders, categories, and calendar view.
+                    <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600 sm:text-xl">
+                        Renewly helps you manage passports, IDs, licenses, subscriptions,
+                        insurance policies, warranties, and other important deadlines from
+                        one simple dashboard.
                     </p>
 
                     <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-                        <a
-                            href={GOOGLE_PLAY_URL}
-                            className="rounded-2xl bg-[#246df3] px-7 py-4 text-center font-bold text-white shadow-lg shadow-blue-500/25 transition hover:bg-[#1d5fd8]"
-                        >
-                            Download on Google Play
-                        </a>
+                        <StoreButton type="google" href={GOOGLE_PLAY_URL} />
+                        <StoreButton type="apple" href={APP_STORE_URL} />
+                    </div>
 
-                        <a
-                            href={APP_STORE_URL}
-                            className="rounded-2xl border border-slate-200 bg-white px-7 py-4 text-center font-bold text-slate-800 transition hover:border-[#246df3]/40 hover:text-[#246df3]"
-                        >
-                            App Store Coming Soon
-                        </a>
+                    <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
+                        {benefits.map((benefit) => {
+                            const Icon = benefit.icon;
+
+                            return (
+                                <div
+                                    key={benefit.title}
+                                    className="rounded-2xl border border-white/80 bg-white/70 p-4 shadow-lg shadow-blue-500/5 backdrop-blur"
+                                >
+                                    <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#246df3]/10 text-[#246df3]">
+                                        <Icon size={21} />
+                                    </div>
+                                    <p className="mt-3 text-sm font-black leading-5 text-slate-800">
+                                        {benefit.title}
+                                    </p>
+                                </div>
+                            );
+                        })}
                     </div>
                 </div>
 
-                <div className="relative mx-auto w-full max-w-md">
-                    <div className="absolute inset-0 rounded-[3rem] bg-[#246df3] blur-3xl opacity-20" />
+                <div className="relative mx-auto flex min-h-[520px] w-full max-w-xl items-center justify-center lg:justify-end">
+                    {/* Soft outer glow */}
+                    <div className="absolute h-[34rem] w-[34rem] rounded-full bg-gradient-to-br from-[#246df3]/25 via-[#7a5cff]/20 to-cyan-300/20 blur-3xl" />
 
-                    <div className="relative rounded-[2rem] border border-white/70 bg-white/80 p-6 shadow-2xl backdrop-blur">
-                        <div className="rounded-[1.5rem] bg-gradient-to-br from-[#3bb7df] to-[#1d36a8] p-8 text-white">
-                            <img
-                                src="/logo.png"
-                                alt="Renewly logo"
-                                className="mx-auto h-28 w-28 rounded-3xl shadow-xl"
-                            />
+                    {/* Decorative glass panel */}
+                    <div className="absolute right-4 top-10 hidden h-[420px] w-[360px] rotate-6 rounded-[3rem] border border-white/70 bg-white/35 shadow-2xl shadow-blue-500/10 backdrop-blur-xl lg:block" />
 
-                            <div className="mt-10 rounded-2xl bg-white/15 p-5 backdrop-blur">
-                                <p className="text-sm text-white/80">Upcoming renewal</p>
-                                <h3 className="mt-2 text-2xl font-bold">Passport</h3>
-                                <p className="mt-1 text-white/80">Expires in 30 days</p>
-                            </div>
+                    {/* Gradient card behind phone */}
+                    <div className="absolute h-[430px] w-[340px] rotate-[-7deg] rounded-[3rem] bg-gradient-to-br from-[#246df3] via-[#4458ff] to-[#8b5cf6] opacity-90 shadow-2xl shadow-blue-500/30" />
 
-                            <div className="mt-4 rounded-2xl bg-white p-5 text-slate-900">
-                                <p className="text-sm font-semibold text-[#246df3]">
-                                    Reminder active
-                                </p>
-                                <p className="mt-1 text-sm text-slate-500">
-                                    Renewly will notify you before the deadline.
-                                </p>
-                            </div>
-                        </div>
+                    {/* Pattern overlay */}
+                    <div className="absolute h-[430px] w-[340px] rotate-[-7deg] rounded-[3rem] bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.35)_1px,transparent_0)] bg-[length:22px_22px] opacity-40" />
+
+                    {/* Floating mini cards */}
+                    <div className="absolute left-2 top-24 hidden rounded-2xl border border-white/70 bg-white/80 px-4 py-3 shadow-xl shadow-blue-500/10 backdrop-blur-xl lg:block">
+                        <p className="text-xs font-bold text-slate-500">Next renewal</p>
+                        <p className="mt-1 text-sm font-black text-slate-900">Passport · 30 days</p>
+                    </div>
+
+                    <div className="absolute bottom-24 right-0 hidden rounded-2xl border border-white/70 bg-white/80 px-4 py-3 shadow-xl shadow-blue-500/10 backdrop-blur-xl lg:block">
+                        <p className="text-xs font-bold text-slate-500">Reminder</p>
+                        <p className="mt-1 text-sm font-black text-[#246df3]">Active</p>
+                    </div>
+
+                    {/* Phone image */}
+                    <img
+                        src="/app-phone.png"
+                        alt="Renewly app preview on phone"
+                        className="relative z-10 w-full max-w-[430px] drop-shadow-[0_45px_90px_rgba(30,64,175,0.45)] transition duration-500 hover:scale-[1.015]"
+                    />
+                </div>
+            </section>
+
+            <section
+                id="features"
+                className="relative z-10 border-y border-white/80 bg-white/65 px-6 py-24 backdrop-blur"
+            >
+                <div className="mx-auto max-w-7xl">
+                    <SectionHeader
+                        eyebrow="Everything you need"
+                        title="Built for practical life admin."
+                        description="Simple enough for daily use. Structured enough for important records."
+                    />
+
+                    <div className="mt-16 grid gap-6 md:grid-cols-3">
+                        {features.map((feature) => {
+                            const Icon = feature.icon;
+
+                            return (
+                                <article
+                                    key={feature.title}
+                                    className="group rounded-[2rem] border border-white/80 bg-white/80 p-8 shadow-xl shadow-blue-500/5 backdrop-blur transition duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-500/10"
+                                >
+                                    <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-[#246df3] to-[#7a5cff] text-white shadow-lg shadow-blue-500/25">
+                                        <Icon size={30} />
+                                    </div>
+
+                                    <h3 className="text-xl font-black">{feature.title}</h3>
+
+                                    <p className="mt-3 leading-7 text-slate-600">
+                                        {feature.description}
+                                    </p>
+                                </article>
+                            );
+                        })}
                     </div>
                 </div>
             </section>
 
-            <section id="features" className="border-y border-slate-200 bg-white px-6 py-20">
+            <section id="screenshots" className="relative z-10 px-6 py-24">
                 <div className="mx-auto max-w-7xl">
-                    <div className="max-w-2xl">
-                        <h2 className="text-4xl font-black tracking-tight">
-                            Built for practical life admin.
-                        </h2>
-                        <p className="mt-4 text-slate-600">
-                            Simple enough for daily use. Structured enough for important records.
-                        </p>
-                    </div>
+                    <SectionHeader
+                        eyebrow="App Preview"
+                        title="Designed for everyday life."
+                        description="Quickly view urgent items, upcoming renewals, and important deadlines."
+                    />
 
-                    <div className="mt-12 grid gap-6 md:grid-cols-3">
-                        {features.map((feature) => (
-                            <div
-                                key={feature.title}
-                                className="rounded-3xl border border-slate-200 bg-[#f7fbff] p-8"
+                    <div className="mt-16 grid gap-8 md:grid-cols-3">
+                        {screenshots.map((screenshot) => (
+                            <article
+                                key={screenshot.src}
+                                className="rounded-[2rem] border border-white/80 bg-white/75 p-4 shadow-2xl shadow-blue-500/10 backdrop-blur"
                             >
-                                <div className="mb-6 h-12 w-12 rounded-2xl bg-[#246df3]" />
-                                <h3 className="text-xl font-bold">{feature.title}</h3>
-                                <p className="mt-3 leading-7 text-slate-600">
-                                    {feature.description}
+                                <img
+                                    src={screenshot.src}
+                                    alt={screenshot.alt}
+                                    className="aspect-[9/19] w-full rounded-[1.5rem] object-cover"
+                                />
+                                <p className="px-2 pt-4 text-center text-sm font-black text-slate-700">
+                                    {screenshot.title}
                                 </p>
-                            </div>
+                            </article>
                         ))}
                     </div>
                 </div>
             </section>
 
-            <section className="px-6 py-20">
-                <div className="mx-auto max-w-4xl rounded-[2rem] bg-[#246df3] px-8 py-14 text-center text-white shadow-xl shadow-blue-500/20">
-                    <h2 className="text-4xl font-black tracking-tight">
-                        Start tracking what matters.
-                    </h2>
-                    <p className="mx-auto mt-4 max-w-2xl text-blue-100">
-                        Keep your documents, renewals, and important dates organized in one app.
-                    </p>
+            <section className="relative z-10 px-6 pb-24">
+                <div className="mx-auto max-w-6xl overflow-hidden rounded-[2rem] bg-gradient-to-r from-[#0f46d9] via-[#246df3] to-[#7a5cff] p-8 text-white shadow-2xl shadow-blue-500/25 sm:p-10">
+                    <div className="flex flex-col items-start justify-between gap-8 lg:flex-row lg:items-center">
+                        <div className="max-w-2xl">
+                            <div className="flex items-center gap-3">
+                                <img
+                                    src="/logo.png"
+                                    alt="Renewly logo"
+                                    className="h-14 w-14 rounded-2xl shadow-xl shadow-blue-950/20"
+                                />
+                                <h2 className="text-3xl font-black tracking-tight sm:text-4xl">
+                                    Start tracking what matters.
+                                </h2>
+                            </div>
 
-                    <a
-                        href={GOOGLE_PLAY_URL}
-                        className="mt-8 inline-flex rounded-2xl bg-white px-7 py-4 font-bold text-[#246df3] transition hover:bg-blue-50"
-                    >
-                        Download Renewly
-                    </a>
+                            <p className="mt-4 text-blue-100">
+                                Keep your documents, renewals, and important dates organized in
+                                one simple app.
+                            </p>
+                        </div>
+
+                        <div className="flex flex-col gap-3 sm:flex-row">
+                            <StoreButton type="google" href={GOOGLE_PLAY_URL} compact />
+                            <StoreButton type="apple" href={APP_STORE_URL} compact />
+                        </div>
+                    </div>
                 </div>
             </section>
 
-            <footer className="border-t border-slate-200 bg-white px-6 py-8">
-                <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 sm:flex-row">
-                    <p className="text-sm text-slate-500">
-                        © {new Date().getFullYear()} Renewly. All rights reserved.
-                    </p>
+            <footer className="relative z-10 border-t border-white/70 bg-white/75 px-6 py-10 backdrop-blur">
+                <div className="mx-auto grid max-w-7xl gap-10 md:grid-cols-2">
+                    <div>
+                        <div className="flex items-center gap-3">
+                            <img
+                                src="/logo.png"
+                                alt="Renewly logo"
+                                className="h-10 w-10 rounded-xl"
+                            />
+                            <span className="text-xl font-black">Renewly</span>
+                        </div>
 
-                    <div className="flex gap-6 text-sm font-medium text-slate-500">
-                        <a href="/privacy" className="hover:text-[#246df3]">
-                            Privacy Policy
-                        </a>
-                        <a href="/terms" className="hover:text-[#246df3]">
-                            Terms
-                        </a>
-                        <a href="/support" className="hover:text-[#246df3]">
-                            Support
-                        </a>
+                        <p className="mt-4 max-w-md text-sm leading-6 text-slate-500">
+                            A simple expiry tracker for documents, renewals, subscriptions,
+                            and important deadlines.
+                        </p>
                     </div>
+
+                    <FooterColumn
+                        title="Resources"
+                        links={[
+                            { label: "Privacy Policy", href: "/privacy" },
+                            { label: "Terms of Service", href: "/terms" },
+                            { label: "Support", href: "/support" },
+                        ]}
+                    />
+                </div>
+
+                <div className="mx-auto mt-10 max-w-7xl border-t border-slate-200 pt-6 text-center text-sm text-slate-500">
+                    © {new Date().getFullYear()} Renewly. All rights reserved.
                 </div>
             </footer>
         </main>
+    );
+}
+
+function BackgroundDecor() {
+    return (
+        <>
+            <div className="pointer-events-none absolute -left-40 -top-40 h-96 w-96 rounded-full bg-blue-400/20 blur-3xl" />
+            <div className="pointer-events-none absolute -right-40 top-40 h-[32rem] w-[32rem] rounded-full bg-indigo-500/20 blur-3xl" />
+            <div className="pointer-events-none absolute bottom-0 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-cyan-300/20 blur-3xl" />
+        </>
+    );
+}
+
+type SectionHeaderProps = {
+    eyebrow: string;
+    title: string;
+    description: string;
+};
+
+function SectionHeader({ eyebrow, title, description }: SectionHeaderProps) {
+    return (
+        <div className="mx-auto max-w-3xl text-center">
+            <div className="mx-auto inline-flex items-center gap-2 rounded-full bg-[#246df3]/10 px-4 py-2 text-sm font-black text-[#246df3]">
+                <Sparkles size={16} />
+                {eyebrow}
+            </div>
+
+            <h2 className="mt-6 text-4xl font-black tracking-tight sm:text-5xl">
+                {title}
+            </h2>
+
+            <p className="mt-4 text-lg leading-8 text-slate-600">{description}</p>
+        </div>
+    );
+}
+
+type StoreButtonProps = {
+    type: "google" | "apple";
+    href: string;
+    compact?: boolean;
+};
+
+function StoreButton({ type, href, compact = false }: StoreButtonProps) {
+    const isGoogle = type === "google";
+
+    return (
+        <a
+            href={href}
+            className={[
+                "inline-flex items-center justify-center gap-3 rounded-2xl bg-slate-950 text-white shadow-xl shadow-slate-900/10 transition duration-300 hover:-translate-y-0.5 hover:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-[#246df3]/25",
+                compact ? "px-5 py-3" : "px-6 py-4",
+            ].join(" ")}
+            aria-label={isGoogle ? "Get it on Google Play" : "Download on the App Store"}
+        >
+            <img
+                src={isGoogle ? "/google-play-logo.svg" : "/apple-logo.png"}
+                alt=""
+                className="h-8 w-8 shrink-0 object-contain"
+                aria-hidden="true"
+            />
+
+            <span className="text-left leading-none">
+                <span className="block text-[10px] font-semibold uppercase tracking-wide text-white/70">
+                    {isGoogle ? "Get it on" : "Download on the"}
+                </span>
+                <span className="mt-1 block text-lg font-black">
+                    {isGoogle ? "Google Play" : "App Store"}
+                </span>
+            </span>
+        </a>
+    );
+}
+
+type FooterColumnProps = {
+    title: string;
+    links: {
+        label: string;
+        href: string;
+    }[];
+};
+
+function FooterColumn({ title, links }: FooterColumnProps) {
+    return (
+        <div className="md:justify-self-end">
+            <h3 className="font-black text-slate-900">{title}</h3>
+
+            <div className="mt-4 flex flex-col gap-3 text-sm font-semibold text-slate-500">
+                {links.map((link) => (
+                    <a
+                        key={link.href}
+                        href={link.href}
+                        className="inline-flex items-center gap-1 transition hover:text-[#246df3]"
+                    >
+                        {link.label}
+                        <ChevronRight size={14} />
+                    </a>
+                ))}
+            </div>
+        </div>
     );
 }
