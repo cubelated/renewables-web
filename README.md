@@ -1,6 +1,12 @@
-# Renewly Web
+<p align="center">
+  <img src="./public/github-banner.png" alt="Renewly Banner" width="100%">
+</p>
 
-Official landing page for **Renewly**, a modern expiry tracker designed to help users stay ahead of document renewals, subscriptions, licenses, memberships, warranties, and other important deadlines.
+<h1 align="center">Renewly Web</h1>
+
+<p align="center">
+  Official landing page for Renewly: Expiry Tracker
+</p>
 
 ## About Renewly
 
