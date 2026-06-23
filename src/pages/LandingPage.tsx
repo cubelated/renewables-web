@@ -8,7 +8,7 @@ import {
     Sparkles,
 } from "lucide-react";
 
-const GOOGLE_PLAY_URL = "#";
+const GOOGLE_PLAY_URL = "https://play.google.com/store/apps/details?id=com.cubelated.renewly";
 const APP_STORE_URL = "#";
 
 const features = [
