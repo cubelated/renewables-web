@@ -18,7 +18,7 @@ export default function LegalLayout({
                     href="/"
                     className="mb-8 inline-flex text-sm font-semibold text-[#246df3]"
                 >
-                    ← Back to Renewly
+                    ← Back to Home
                 </a>
 
                 <div className="rounded-3xl border border-slate-200 bg-white p-10 shadow-sm">

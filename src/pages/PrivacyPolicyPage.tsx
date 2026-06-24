@@ -7,11 +7,11 @@ export default function PrivacyPolicyPage() {
             updatedAt="June 23, 2026"
         >
             <p>
-                Welcome to Renewly.
+                Welcome to Renewables.
             </p>
 
             <p>
-                Renewly is an expiry tracking and life administration application that
+                Renewables is an expiry tracking and life administration application that
                 helps users manage important documents, subscriptions, licenses,
                 memberships, insurance policies, certifications, and other recurring
                 deadlines.
@@ -19,7 +19,7 @@ export default function PrivacyPolicyPage() {
 
             <p>
                 This Privacy Policy explains how information is collected, used,
-                stored, and protected when you use Renewly.
+                stored, and protected when you use Renewables.
             </p>
 
             <h2>Information We Collect</h2>
@@ -27,7 +27,7 @@ export default function PrivacyPolicyPage() {
             <h3>Account Information</h3>
 
             <p>
-                When you sign in to Renewly, we may collect:
+                When you sign in to Renewables, we may collect:
             </p>
 
             <ul>
@@ -39,7 +39,7 @@ export default function PrivacyPolicyPage() {
             </ul>
 
             <p>
-                In future versions of Renewly, additional authentication methods such
+                In future versions of Renewables, additional authentication methods such
                 as Apple Sign-In and email/password authentication may be supported.
             </p>
 
@@ -76,7 +76,7 @@ export default function PrivacyPolicyPage() {
             </ul>
 
             <p>
-                Future versions of Renewly may collect:
+                Future versions of Renewables may collect:
             </p>
 
             <ul>
@@ -101,7 +101,7 @@ export default function PrivacyPolicyPage() {
             </ul>
 
             <p>
-                Renewly does not directly collect, store, or process payment card
+                Renewables does not directly collect, store, or process payment card
                 information.
             </p>
 
@@ -126,7 +126,7 @@ export default function PrivacyPolicyPage() {
             <h2>Notifications</h2>
 
             <p>
-                Renewly uses both local notifications and cloud-based push
+                Renewables uses both local notifications and cloud-based push
                 notifications to remind users of upcoming or overdue items.
             </p>
 
@@ -141,7 +141,7 @@ export default function PrivacyPolicyPage() {
             <h2>Third-Party Services</h2>
 
             <p>
-                Renewly relies on trusted third-party providers to deliver
+                Renewables relies on trusted third-party providers to deliver
                 functionality.
             </p>
 
@@ -178,7 +178,7 @@ export default function PrivacyPolicyPage() {
             <h2>Data Sharing</h2>
 
             <p>
-                Renewly does not sell personal information.
+                Renewables does not sell personal information.
             </p>
 
             <p>
@@ -195,7 +195,7 @@ export default function PrivacyPolicyPage() {
             <h2>International Users</h2>
 
             <p>
-                Renewly may be used by individuals worldwide.
+                Renewables may be used by individuals worldwide.
             </p>
 
             <p>
@@ -204,14 +204,14 @@ export default function PrivacyPolicyPage() {
             </p>
 
             <p>
-                By using Renewly, you consent to such transfers where permitted by
+                By using Renewables, you consent to such transfers where permitted by
                 law.
             </p>
 
             <h2>Data Retention</h2>
 
             <p>
-                Renewly retains account information and user content for as long as
+                Renewables retains account information and user content for as long as
                 the account remains active.
             </p>
 
@@ -233,7 +233,7 @@ export default function PrivacyPolicyPage() {
             </p>
 
             <p>
-                Upon successful deletion request processing, Renewly will permanently
+                Upon successful deletion request processing, Renewables will permanently
                 remove:
             </p>
 
@@ -259,7 +259,7 @@ export default function PrivacyPolicyPage() {
             </p>
 
             <p>
-                Future versions of Renewly may provide self-service account deletion
+                Future versions of Renewables may provide self-service account deletion
                 within the application.
             </p>
 
@@ -289,7 +289,7 @@ export default function PrivacyPolicyPage() {
             <h2>Children's Privacy</h2>
 
             <p>
-                Renewly is intended for individuals aged 13 years and older.
+                Renewables is intended for individuals aged 13 years and older.
             </p>
 
             <p>
@@ -305,7 +305,7 @@ export default function PrivacyPolicyPage() {
             <h2>Security</h2>
 
             <p>
-                Renewly implements reasonable technical and organizational measures
+                Renewables implements reasonable technical and organizational measures
                 designed to protect information from unauthorized access, disclosure,
                 alteration, or destruction.
             </p>
@@ -318,7 +318,7 @@ export default function PrivacyPolicyPage() {
             <h2>Future Features</h2>
 
             <p>
-                Future versions of Renewly may introduce:
+                Future versions of Renewables may introduce:
             </p>
 
             <ul>
@@ -343,11 +343,11 @@ export default function PrivacyPolicyPage() {
 
             <p>
                 Updated versions will be published within the application and on the
-                Renewly website.
+                Renewables website.
             </p>
 
             <p>
-                Continued use of Renewly after changes become effective constitutes
+                Continued use of Renewables after changes become effective constitutes
                 acceptance of the updated Privacy Policy.
             </p>
 

@@ -13,13 +13,13 @@ const SUPPORT_EMAIL = "cubelated@gmail.com";
 
 export default function SupportPage() {
   const deletionMailto = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(
-    "Renewly Account Deletion Request",
+    "Renewables Account Deletion Request",
   )}&body=${encodeURIComponent(
-    `Hello Renewly Support,
+    `Hello Renewables Support,
 
-I would like to request deletion of my Renewly account and associated data.
+I would like to request deletion of my Renewables account and associated data.
 
-Renewly account email:
+Renewables account email:
 Reason (optional):
 
 I understand that this request will permanently delete my account data, renewal records, reminder settings, notification tokens, and related app data.
@@ -28,7 +28,7 @@ Thank you.`,
   )}`;
 
   const supportMailto = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(
-    "Renewly Support Request",
+    "Renewables Support Request",
   )}`;
 
   return (
@@ -42,14 +42,14 @@ Thank you.`,
           className="mb-8 inline-flex items-center gap-2 text-sm font-bold text-[#246df3] transition hover:opacity-80"
         >
           <ArrowLeft size={16} />
-          Back to Renewly
+          Back to Renewables
         </a>
 
         <section className="rounded-[2rem] border border-white/70 bg-white/80 p-8 shadow-xl shadow-blue-500/10 backdrop-blur sm:p-10">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 rounded-full bg-[#246df3]/10 px-4 py-2 text-sm font-bold text-[#246df3]">
               <HelpCircle size={16} />
-              Renewly Support
+              Renewables Support
             </div>
 
             <h1 className="mt-6 text-4xl font-black tracking-tight sm:text-5xl">
@@ -57,7 +57,7 @@ Thank you.`,
             </h1>
 
             <p className="mt-4 text-lg leading-8 text-slate-600">
-              Contact Renewly support for account deletion, billing questions,
+              Contact Renewables support for account deletion, billing questions,
               bug reports, or general app support.
             </p>
           </div>
@@ -66,7 +66,7 @@ Thank you.`,
             <SupportCard
               icon={<Trash2 size={26} />}
               title="Account Deletion Request"
-              description="Request permanent deletion of your Renewly account and associated app data."
+              description="Request permanent deletion of your Renewables account and associated app data."
               buttonLabel="Request Account Deletion"
               href={deletionMailto}
               highlighted
@@ -93,7 +93,7 @@ Thank you.`,
                 </h2>
 
                 <p className="mt-3 leading-7 text-slate-600">
-                  When you request account deletion, Renewly will verify your
+                  When you request account deletion, Renewables will verify your
                   account and permanently delete associated account data,
                   renewal records, reminder settings, notification tokens, and
                   related application data.
@@ -103,7 +103,7 @@ Thank you.`,
                   <InfoItem
                     icon={<CheckCircle2 size={20} />}
                     title="What to include"
-                    description="Your Renewly account email address and a clear request to delete your account."
+                    description="Your Renewables account email address and a clear request to delete your account."
                   />
 
                   <InfoItem
@@ -127,7 +127,7 @@ Thank you.`,
 
                 <p className="mt-3 leading-7 text-slate-600">
                   For bug reports, please include your device model, operating
-                  system version, Renewly app version, and a short description
+                  system version, Renewables app version, and a short description
                   of what happened.
                 </p>
               </div>

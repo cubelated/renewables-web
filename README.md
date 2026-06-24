@@ -1,16 +1,16 @@
 <p align="center">
-  <img src="./public/github-banner.png" alt="Renewly Banner" width="100%">
+  <img src="./public/github-banner.png" alt="Renewables Banner" width="100%">
 </p>
 
-<h1 align="center">Renewly Web</h1>
+<h1 align="center">Renewables Web</h1>
 
 <p align="center">
-  Official landing page for Renewly: Expiry Tracker
+  Official landing page for Renewables: Expiry Tracker
 </p>
 
-## About Renewly
+## About Renewables
 
-Renewly helps individuals organize and track:
+Renewables helps individuals organize and track:
 
 * Passports
 * National IDs
@@ -135,7 +135,7 @@ For support, questions, bug reports, or account deletion requests:
 
 ## Privacy
 
-Renewly is committed to protecting user privacy.
+Renewables is committed to protecting user privacy.
 
 Privacy Policy:
 
@@ -157,6 +157,6 @@ Support:
 
 ## License
 
-Copyright © 2026 Renewly.
+Copyright © 2026 Renewables.
 
 All rights reserved.

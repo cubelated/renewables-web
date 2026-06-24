@@ -54,17 +54,17 @@ const benefits = [
 const screenshots = [
     {
         src: "/screenshot-template.jpg",
-        alt: "Renewly template screen",
+        alt: "Renewables template screen",
         title: "Templates",
     },
     {
         src: "/screenshot-category.jpg",
-        alt: "Renewly category screen",
+        alt: "Renewables category screen",
         title: "Categories",
     },
     {
         src: "/screenshot-calendar.jpg",
-        alt: "Renewly calendar screen",
+        alt: "Renewables calendar screen",
         title: "Calendar",
     },
 ];
@@ -75,13 +75,13 @@ export default function LandingPage() {
             <BackgroundDecor />
 
             <nav className="relative z-20 mx-auto flex max-w-7xl items-center justify-between px-6 py-6">
-                <a href="/" className="flex items-center gap-3" aria-label="Renewly home">
+                <a href="/" className="flex items-center gap-3" aria-label="Renewables home">
                     <img
                         src="/logo.png"
-                        alt="Renewly logo"
+                        alt="Renewables logo"
                         className="h-11 w-11 rounded-xl shadow-md shadow-blue-500/20"
                     />
-                    <span className="text-2xl font-black tracking-tight">Renewly</span>
+                    <span className="text-2xl font-black tracking-tight">Renewables</span>
                 </a>
 
                 <div className="hidden items-center gap-8 text-sm font-semibold text-slate-700 md:flex">
@@ -116,9 +116,8 @@ export default function LandingPage() {
                     </h1>
 
                     <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600 sm:text-xl">
-                        Renewly helps you manage passports, IDs, licenses, subscriptions,
-                        insurance policies, warranties, and other important deadlines from
-                        one simple dashboard.
+                        Renewables helps you manage passports, IDs, licenses, subscriptions,
+                        insurance policies, warranties, and other important deadlines in one place.
                     </p>
 
                     <div className="mt-10 flex flex-col gap-4 sm:flex-row">
@@ -174,7 +173,7 @@ export default function LandingPage() {
                     {/* Phone image */}
                     <img
                         src="/app-phone.png"
-                        alt="Renewly app preview on phone"
+                        alt="Renewables app preview on phone"
                         className="relative z-10 w-full max-w-[430px] drop-shadow-[0_45px_90px_rgba(30,64,175,0.45)] transition duration-500 hover:scale-[1.015]"
                     />
                 </div>
@@ -251,7 +250,7 @@ export default function LandingPage() {
                             <div className="flex items-center gap-3">
                                 <img
                                     src="/logo.png"
-                                    alt="Renewly logo"
+                                    alt="Renewables logo"
                                     className="h-14 w-14 rounded-2xl shadow-xl shadow-blue-950/20"
                                 />
                                 <h2 className="text-3xl font-black tracking-tight sm:text-4xl">
@@ -279,10 +278,10 @@ export default function LandingPage() {
                         <div className="flex items-center gap-3">
                             <img
                                 src="/logo.png"
-                                alt="Renewly logo"
+                                alt="Renewables logo"
                                 className="h-10 w-10 rounded-xl"
                             />
-                            <span className="text-xl font-black">Renewly</span>
+                            <span className="text-xl font-black">Renewables</span>
                         </div>
 
                         <p className="mt-4 max-w-md text-sm leading-6 text-slate-500">
@@ -302,7 +301,7 @@ export default function LandingPage() {
                 </div>
 
                 <div className="mx-auto mt-10 max-w-7xl border-t border-slate-200 pt-6 text-center text-sm text-slate-500">
-                    © {new Date().getFullYear()} Renewly. All rights reserved.
+                    © {new Date().getFullYear()} Renewables. All rights reserved.
                 </div>
             </footer>
         </main>

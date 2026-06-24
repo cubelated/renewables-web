@@ -4,25 +4,25 @@ export default function TermsPage() {
   return (
     <LegalLayout title="Terms of Service" updatedAt="23 June 2026">
       <p>
-        These Terms of Service govern your use of Renewly, an expiry tracking
+        These Terms of Service govern your use of Renewables, an expiry tracking
         and life administration application.
       </p>
 
       <p>
-        By accessing or using Renewly, you agree to these Terms. If you do not
+        By accessing or using Renewables, you agree to these Terms. If you do not
         agree, do not use the app.
       </p>
 
-      <h2>Use of Renewly</h2>
+      <h2>Use of Renewables</h2>
 
       <p>
-        Renewly helps users track important documents, subscriptions, licenses,
+        Renewables helps users track important documents, subscriptions, licenses,
         insurance policies, certifications, memberships, and recurring renewal
         deadlines.
       </p>
 
       <p>
-        Renewly is provided as an organizational and reminder tool only. It does
+        Renewables is provided as an organizational and reminder tool only. It does
         not provide legal, financial, insurance, tax, immigration, medical, or
         professional advice.
       </p>
@@ -31,7 +31,7 @@ export default function TermsPage() {
 
       <p>
         You may need to sign in using a supported authentication method, such as
-        Google Sign-In, to use Renewly.
+        Google Sign-In, to use Renewables.
       </p>
 
       <p>
@@ -44,7 +44,7 @@ export default function TermsPage() {
       <p>You agree to:</p>
 
       <ul>
-        <li>Use Renewly lawfully and responsibly</li>
+        <li>Use Renewables lawfully and responsibly</li>
         <li>Provide accurate information where required</li>
         <li>Keep your account access secure</li>
         <li>Not misuse, disrupt, or interfere with the service</li>
@@ -55,7 +55,7 @@ export default function TermsPage() {
 
       <p>
         You retain ownership of the renewal records, notes, categories, dates,
-        and other information you create in Renewly.
+        and other information you create in Renewables.
       </p>
 
       <p>
@@ -66,27 +66,27 @@ export default function TermsPage() {
       <h2>Reminders and Notifications</h2>
 
       <p>
-        Renewly may send local notifications and push notifications to remind
+        Renewables may send local notifications and push notifications to remind
         you about upcoming or overdue items.
       </p>
 
       <p>
         Reminder delivery may depend on your device settings, network
         connection, operating system behavior, permissions, and third-party
-        services. Renewly does not guarantee that every reminder will be
+        services. Renewables does not guarantee that every reminder will be
         delivered at the exact intended time.
       </p>
 
       <h2>Subscriptions and Payments</h2>
 
       <p>
-        Renewly may offer premium features through paid subscriptions.
+        Renewables may offer premium features through paid subscriptions.
         Subscription purchases, renewals, cancellations, and refunds are handled
         through Google Play Billing and RevenueCat.
       </p>
 
       <p>
-        Renewly does not directly collect or store payment card information.
+        Renewables does not directly collect or store payment card information.
       </p>
 
       <p>
@@ -104,7 +104,7 @@ export default function TermsPage() {
       </p>
 
       <p>
-        Deleting the Renewly app does not automatically cancel an active
+        Deleting the Renewables app does not automatically cancel an active
         subscription. You must cancel the subscription through the applicable app
         store account settings.
       </p>
@@ -112,7 +112,7 @@ export default function TermsPage() {
       <h2>Account Deletion</h2>
 
       <p>
-        You may request deletion of your Renewly account and associated app data
+        You may request deletion of your Renewables account and associated app data
         by contacting:
       </p>
 
@@ -130,19 +130,19 @@ export default function TermsPage() {
       <h2>Service Availability</h2>
 
       <p>
-        We aim to keep Renewly reliable and available, but we do not guarantee
+        We aim to keep Renewables reliable and available, but we do not guarantee
         uninterrupted, error-free, or always-available service.
       </p>
 
       <p>
-        Renewly may be modified, suspended, or discontinued at any time,
+        Renewables may be modified, suspended, or discontinued at any time,
         including for maintenance, security, operational, or business reasons.
       </p>
 
       <h2>Future Features</h2>
 
       <p>
-        Renewly may introduce additional features such as Apple Sign-In,
+        Renewables may introduce additional features such as Apple Sign-In,
         email/password authentication, collaboration, OCR scanning, profile
         customization, or web access.
       </p>
@@ -155,7 +155,7 @@ export default function TermsPage() {
       <h2>Limitation of Liability</h2>
 
       <p>
-        Renewly is provided on an &quot;as is&quot; and &quot;as available&quot;
+        Renewables is provided on an &quot;as is&quot; and &quot;as available&quot;
         basis.
       </p>
 
@@ -172,14 +172,14 @@ export default function TermsPage() {
       <h2>No Warranty</h2>
 
       <p>
-        Renewly does not warrant that the app will meet all user expectations,
+        Renewables does not warrant that the app will meet all user expectations,
         operate without interruption, or be free from defects.
       </p>
 
       <h2>Termination</h2>
 
       <p>
-        We may suspend or terminate access to Renewly if a user violates these
+        We may suspend or terminate access to Renewables if a user violates these
         Terms, misuses the service, creates security risks, or engages in
         unlawful or harmful activity.
       </p>
@@ -192,7 +192,7 @@ export default function TermsPage() {
       </p>
 
       <p>
-        Continued use of Renewly after updated Terms become effective means you
+        Continued use of Renewables after updated Terms become effective means you
         accept the revised Terms.
       </p>
 
