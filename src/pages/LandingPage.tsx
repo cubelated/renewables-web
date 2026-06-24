@@ -53,19 +53,18 @@ const benefits = [
 
 const screenshots = [
     {
-        src: "/screenshot-template.jpg",
+        src: "/screenshot-template.png",
         alt: "Renewables template screen",
         title: "Templates",
     },
     {
-        src: "/screenshot-category.jpg",
-        alt: "Renewables category screen",
-        title: "Categories",
-    },
-    {
-        src: "/screenshot-calendar.jpg",
+        src: "/screenshot-calendar.png",
         alt: "Renewables calendar screen",
         title: "Calendar",
+    },{
+        src: "/screenshot-category.png",
+        alt: "Renewables category screen",
+        title: "Categories",
     },
 ];
 
@@ -223,7 +222,7 @@ export default function LandingPage() {
                                 <img
                                     src={screenshot.src}
                                     alt={screenshot.alt}
-                                    className="aspect-[9/19] w-full rounded-[1.5rem] object-cover"
+                                    className="aspect-[9/18] w-full rounded-[1.5rem] object-cover"
                                 />
                                 <p className="px-2 pt-4 text-center text-sm font-black text-slate-700">
                                     {screenshot.title}
