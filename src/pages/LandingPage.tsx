@@ -146,35 +146,26 @@ export default function LandingPage() {
                     </div>
                 </div>
 
-                <div className="relative mx-auto flex min-h-[520px] w-full max-w-xl items-center justify-center lg:justify-end">
-                    {/* Soft outer glow */}
-                    <div className="absolute h-[34rem] w-[34rem] rounded-full bg-gradient-to-br from-[#246df3]/25 via-[#7a5cff]/20 to-cyan-300/20 blur-3xl" />
-
-                    {/* Decorative glass panel */}
-                    <div className="absolute right-4 top-10 hidden h-[420px] w-[360px] rotate-6 rounded-[3rem] border border-white/70 bg-white/35 shadow-2xl shadow-blue-500/10 backdrop-blur-xl lg:block" />
-
-                    {/* Gradient card behind phone */}
-                    <div className="absolute h-[430px] w-[340px] rotate-[-7deg] rounded-[3rem] bg-gradient-to-br from-[#246df3] via-[#4458ff] to-[#8b5cf6] opacity-90 shadow-2xl shadow-blue-500/30" />
-
-                    {/* Pattern overlay */}
-                    <div className="absolute h-[430px] w-[340px] rotate-[-7deg] rounded-[3rem] bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.35)_1px,transparent_0)] bg-[length:22px_22px] opacity-40" />
-
-                    {/* Floating mini cards */}
-                    <div className="absolute left-2 top-24 hidden rounded-2xl border border-white/70 bg-white/80 px-4 py-3 shadow-xl shadow-blue-500/10 backdrop-blur-xl lg:block">
-                        <p className="text-xs font-bold text-slate-500">Next renewal</p>
-                        <p className="mt-1 text-sm font-black text-slate-900">Passport · 30 days</p>
+                <div className="relative mx-auto flex min-h-[560px] w-full max-w-xl items-center justify-center overflow-visible">
+                    {/* Soft background glow */}
+                    <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center">
+                        <div className="h-[34rem] w-[34rem] rounded-full bg-gradient-to-br from-[#246df3]/20 via-[#7a5cff]/10 to-cyan-300/10 blur-3xl" />
                     </div>
 
-                    <div className="absolute bottom-24 right-0 hidden rounded-2xl border border-white/70 bg-white/80 px-4 py-3 shadow-xl shadow-blue-500/10 backdrop-blur-xl lg:block">
-                        <p className="text-xs font-bold text-slate-500">Reminder</p>
-                        <p className="mt-1 text-sm font-black text-[#246df3]">Active</p>
-                    </div>
+                    {/* Clean background card */}
+                    <div className="absolute z-10 h-[380px] w-[450px] rounded-[3rem] border border-white/70 bg-white/50 shadow-2xl shadow-blue-500/10 backdrop-blur-2xl" />
 
-                    {/* Phone image */}
+                    {/* Subtle accent layer */}
+                    <div className="absolute z-20 h-[530px] w-[380px] rotate-[5deg] rounded-[2.75rem] bg-gradient-to-br from-[#246df3]/90 via-[#4f63ff]/85 to-[#8b5cf6]/80 shadow-2xl shadow-blue-500/25" />
+
+                    {/* Light pattern overlay */}
+                    <div className="absolute z-30 h-[430px] w-[400px] rotate-[8deg] rounded-[2.75rem] bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.28)_1px,transparent_0)] bg-[length:24px_24px] opacity-35" />
+
+                    {/* Phone image - always centered */}
                     <img
                         src="/app-phone.png"
                         alt="Renewables app preview on phone"
-                        className="relative z-10 w-full max-w-[430px] drop-shadow-[0_45px_90px_rgba(30,64,175,0.45)] transition duration-500 hover:scale-[1.015]"
+                        className="relative z-40 mx-auto w-full max-w-[380px] drop-shadow-[0_45px_90px_rgba(30,64,175,0.42)] transition duration-500 hover:scale-[1.015]"
                     />
                 </div>
             </section>
