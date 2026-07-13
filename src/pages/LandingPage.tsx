@@ -3,14 +3,12 @@ import {
   CalendarDays,
   Check,
   ChevronRight,
-  Clock3,
-  Cloud,
+  CloudSync,
   HelpCircle,
   MessageCircleQuestion,
-  ShieldCheck,
   Smartphone,
   Sparkles,
-  WandSparkles,
+  WandSparkles, Infinity
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useEffect, useRef } from "react";
@@ -21,65 +19,51 @@ const GOOGLE_PLAY_URL =
 
 const features = [
   {
-    icon: Clock3,
-    title: "Expiry tracking",
-    description:
-      "Keep passports, IDs, licenses, insurance, subscriptions, warranties, and other dated records together.",
-  },
-  {
     icon: Bell,
-    title: "Flexible reminders",
+    title: "Easy reminders",
     description:
-      "Choose when to be reminded before each expiry, with up to five reminder times per item on Pro.",
+      "Start from a ready-made template and choose when you want to be reminded.",
+    href: "#easy-reminders",
   },
   {
     icon: CalendarDays,
     title: "Calendar view",
     description:
       "See upcoming expiries and renewal dates in a calendar built for quick planning.",
+    href: "#calendar",
   },
   {
     icon: Smartphone,
     title: "Home screen widget",
     description:
       "Check urgent items and dates coming within 30 days without opening the app.",
-  },
-];
-
-const benefits = [
-  {
-    icon: Bell,
-    title: "Flexible reminders",
+    href: "#widget",
   },
   {
-    icon: CalendarDays,
-    title: "Calendar view",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Organized records",
-  },
-  {
-    icon: Cloud,
+    icon: CloudSync,
     title: "Cloud sync",
+    description:
+      "Sign in to keep your items synchronized and ready across supported devices.",
+    href: "#cloud-sync",
   },
 ];
 
-const screenshots = [
+const syncAvatars = [
   {
-    src: "/screenshot-template.png",
-    alt: "Renewables template screen",
-    title: "Templates",
+    src: "/avatars/1.jpg",
+    alt: "Illustrated user avatar",
   },
   {
-    src: "/screenshot-calendar.png",
-    alt: "Renewables calendar screen",
-    title: "Calendar",
+    src: "/avatars/2.jpg",
+    alt: "Illustrated user avatar",
   },
   {
-    src: "/screenshot-category.png",
-    alt: "Renewables category screen",
-    title: "Categories",
+    src: "/avatars/3.jpg",
+    alt: "Illustrated user avatar",
+  },
+  {
+    src: "/avatars/4.jpg",
+    alt: "Illustrated user avatar",
   },
 ];
 
@@ -179,14 +163,8 @@ export default function LandingPage() {
           <a href="#features" className="transition hover:text-[#246df3]">
             Features
           </a>
-          <a href="#widget" className="transition hover:text-[#246df3]">
-            Widget
-          </a>
           <a href="#pro" className="transition hover:text-[#246df3]">
             Pro
-          </a>
-          <a href="#screenshots" className="transition hover:text-[#246df3]">
-            Screenshots
           </a>
           <a href="#faq" className="transition hover:text-[#246df3]">
             FAQ
@@ -208,47 +186,23 @@ export default function LandingPage() {
           </div>
 
           <h1 className="mt-8 max-w-3xl text-5xl font-black tracking-tight text-slate-950 sm:text-6xl lg:text-7xl">
-            Track renewals, expiry dates, and{" "}
+            Track documents and expiry dates,{" "}
             <span className="bg-gradient-to-r from-[#246df3] via-[#4458ff] to-[#7a5cff] bg-clip-text text-transparent">
-              reminders
+              all in one place
             </span>
-            —all in one place.
+            .
           </h1>
 
           <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600 sm:text-xl">
-            Stay ahead of passports, IDs, licenses, subscriptions, insurance,
-            warranties, and the other important dates life asks you to remember.
+            Keeping track of your documents alone is a{" "}
+            <span className="underline">troublesome task</span>.<br></br>
+            Renewables helps you stay ahead of every important dates life asks
+            you to remember.
           </p>
 
           <div className="mt-10 flex flex-col gap-4 sm:flex-row">
             <StoreButton type="google" href={GOOGLE_PLAY_URL} />
             <StoreButton type="apple" />
-          </div>
-
-          <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
-            {benefits.map((benefit, index) => {
-              const Icon = benefit.icon;
-
-              return (
-                <div
-                  key={benefit.title}
-                  data-reveal
-                  style={
-                    {
-                      "--reveal-delay": `${180 + index * 70}ms`,
-                    } as CSSProperties
-                  }
-                  className="group rounded-2xl border border-white/80 bg-white/70 p-4 shadow-lg shadow-blue-500/5 backdrop-blur transition duration-300 hover:-translate-y-1 hover:border-blue-200 hover:bg-white hover:shadow-xl hover:shadow-blue-500/10"
-                >
-                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#246df3]/10 text-[#246df3] transition duration-300 group-hover:scale-105 group-hover:bg-[#246df3] group-hover:text-white">
-                    <Icon size={21} />
-                  </div>
-                  <p className="mt-3 text-sm font-black leading-5 text-slate-800">
-                    {benefit.title}
-                  </p>
-                </div>
-              );
-            })}
           </div>
         </div>
 
@@ -297,13 +251,14 @@ export default function LandingPage() {
               const Icon = feature.icon;
 
               return (
-                <article
+                <a
                   key={feature.title}
+                  href={feature.href}
                   data-reveal
                   style={
                     { "--reveal-delay": `${index * 90}ms` } as CSSProperties
                   }
-                  className="group h-full rounded-[2rem] border border-white/80 bg-white/80 p-8 shadow-xl shadow-blue-500/5 backdrop-blur transition duration-300 hover:-translate-y-1.5 hover:border-blue-100 hover:bg-white hover:shadow-2xl hover:shadow-blue-500/10"
+                  className="group h-full rounded-[2rem] border border-white/80 bg-white/80 p-8 shadow-xl shadow-blue-500/5 backdrop-blur transition duration-300 hover:-translate-y-1.5 hover:border-blue-100 hover:bg-white hover:shadow-2xl hover:shadow-blue-500/10 focus:outline-none focus:ring-4 focus:ring-[#246df3]/20"
                 >
                   <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-[#246df3] to-[#7a5cff] text-white shadow-lg shadow-blue-500/25 transition duration-300 group-hover:scale-105 group-hover:rotate-2">
                     <Icon size={30} />
@@ -314,9 +269,87 @@ export default function LandingPage() {
                   <p className="mt-3 leading-7 text-slate-600">
                     {feature.description}
                   </p>
-                </article>
+                  <span className="mt-6 inline-flex items-center gap-1 text-sm font-black text-[#246df3]">
+                    Explore feature
+                    <ChevronRight
+                      size={16}
+                      className="transition-transform group-hover:translate-x-1"
+                    />
+                  </span>
+                </a>
               );
             })}
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="easy-reminders"
+        className="relative z-10 scroll-mt-8 px-6 py-24"
+      >
+        <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-2">
+          <FeatureScreenshot
+            src="/screenshot-template.png"
+            alt="Renewables templates for common documents and renewals"
+            reveal="left"
+          />
+
+          <div data-reveal="right">
+            <FeatureEyebrow icon={Bell}>Easy reminders</FeatureEyebrow>
+            <h2 className="mt-6 text-4xl font-black tracking-tight sm:text-5xl">
+              Start quickly with a template, then choose when to be reminded.
+            </h2>
+            <p className="mt-5 text-lg leading-8 text-slate-600">
+              Pick a template for common life-admin items such as passports,
+              insurance, warranties, subscriptions, and licenses. Each one gives
+              you a useful starting point, while keeping the due date and
+              reminder timing fully under your control.
+            </p>
+            <ul className="mt-8 space-y-4">
+              {[
+                "Ready-made templates for common expiry dates",
+                "Two reminder per item on Free",
+                "Up to five reminder times per item on Pro",
+              ].map((point) => (
+                <FeaturePoint key={point}>{point}</FeaturePoint>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="calendar"
+        className="relative z-10 scroll-mt-8 border-y border-white/80 bg-white/65 px-6 py-24 backdrop-blur"
+      >
+        <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-2">
+          <div data-reveal="left" className="lg:order-1">
+            <FeatureEyebrow icon={CalendarDays}>Calendar view</FeatureEyebrow>
+            <h2 className="mt-6 text-4xl font-black tracking-tight sm:text-5xl">
+              See every important date in context.
+            </h2>
+            <p className="mt-5 text-lg leading-8 text-slate-600">
+              Browse upcoming expiries by day and understand what is ahead at a
+              glance. The calendar keeps deadlines visible, so you can plan
+              renewals before they become urgent.
+            </p>
+            <ul className="mt-8 space-y-4">
+              {[
+                "View expiry and renewal dates by month",
+                "Spot busy periods before deadlines overlap",
+                "Open an item directly from its calendar date",
+              ].map((point) => (
+                <FeaturePoint key={point}>{point}</FeaturePoint>
+              ))}
+            </ul>
+          </div>
+
+          <div className="lg:order-2">
+            <FeatureScreenshot
+              src="/screenshot-calendar.png"
+              alt="Renewables calendar showing upcoming expiry dates"
+              reveal="right"
+            />
           </div>
         </div>
       </section>
@@ -447,6 +480,68 @@ export default function LandingPage() {
       </section>
 
       <section
+        id="cloud-sync"
+        className="relative z-10 scroll-mt-8 border-y border-white/80 bg-white/65 px-6 py-24 backdrop-blur"
+      >
+        <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
+          <div data-reveal="left">
+            <FeatureEyebrow icon={CloudSync}>Cloud sync</FeatureEyebrow>
+            <h2 className="mt-6 text-4xl font-black tracking-tight sm:text-5xl">
+              Your items stay with your account.
+            </h2>
+            <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-600">
+              Every signed-in account has its Renewables items synchronized in
+              the cloud. Sign back in on a supported device to fetch your
+              tracked items and continue where you left off.
+            </p>
+          </div>
+
+          <div
+            data-reveal="right"
+            className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-[#0f46d9] via-[#246df3] to-[#7a5cff] p-8 text-white shadow-2xl shadow-blue-500/20 sm:p-10"
+          >
+            <div className="pointer-events-none absolute -right-12 -top-12 h-48 w-48 rounded-full bg-cyan-300/25 blur-3xl" />
+            <div className="relative">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <p className="text-sm font-black uppercase tracking-[0.18em] text-blue-100">
+                    One account
+                  </p>
+                  <p className="mt-2 text-2xl font-black">Always in sync</p>
+                </div>
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-white/15 bg-white/10 backdrop-blur">
+                  <CloudSync size={27} />
+                </div>
+              </div>
+
+              <div className="mt-10 flex -space-x-3">
+                {syncAvatars.map((avatar, index) => (
+                  <img
+                    key={avatar.src}
+                    src={avatar.src}
+                    alt={avatar.alt}
+                    loading="lazy"
+                    referrerPolicy="no-referrer"
+                    style={{ zIndex: syncAvatars.length - index }}
+                    className="h-16 w-16 rounded-full border-4 border-[#3569eb]/10 bg-white object-cover shadow-lg sm:h-20 sm:w-20"
+                  />
+                ))}
+              </div>
+
+              <div className="mt-8 flex items-center gap-3 rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-300 text-emerald-950">
+                  <Check size={18} strokeWidth={3} />
+                </span>
+                <p className="font-bold text-blue-50">
+                  Sign in to fetch your latest items automatically.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section
         id="pro"
         className="relative z-10 scroll-mt-8 overflow-hidden bg-gradient-to-br from-[#081638] via-[#123f9b] to-[#5b35b5] px-6 py-24 text-white"
       >
@@ -461,84 +556,98 @@ export default function LandingPage() {
               Renewables Pro
             </div>
             <h2 className="mt-6 text-4xl font-black tracking-tight sm:text-5xl">
-              Renew once. Stay ready for what comes next.
+              More room. More reminders. Smarter renewals.
             </h2>
             <p className="mt-4 text-lg leading-8 text-blue-100">
-              Choose how each recurring item moves forward after
-              renewal—automatically for predictable schedules or with your
-              confirmation when dates vary.
+              Upgrade to track everything without limits, add more reminder times, and keep
+              recurring items moving forward your way.
             </p>
           </div>
 
-          <div className="mt-14 grid gap-6 lg:grid-cols-2">
+          <div className="mt-14 grid gap-6 md:grid-cols-2">
             <div data-reveal="left" className="h-full">
               <ProFeature
-                icon={WandSparkles}
-                title="Auto-create next expiry"
-                description="Set a recurrence schedule and Renewables calculates the next expiry as soon as you mark the current cycle as renewed."
+                icon={Infinity}
+                title="Unlimited active items"
+                description="Track every document, subscription, warranty, and renewal that matters without an active-item limit."
                 points={[
-                  "Best for fixed renewal schedules",
-                  "Carries your current reminders forward",
-                  "Stops at your chosen end date or renewal count",
+                  "No limit on active items",
+                  "Keep every important deadline together",
                 ]}
               />
             </div>
+
             <div
               data-reveal="right"
-              style={{ "--reveal-delay": "100ms" } as CSSProperties}
+              style={{ "--reveal-delay": "75ms" } as CSSProperties}
+              className="h-full"
+            >
+              <ProFeature
+                icon={Bell}
+                title="Up to 5 reminders"
+                description="Choose up to five reminder times for each item, from an early heads-up to a final reminder near the due date."
+                points={[
+                  "Customize reminder timing per item",
+                  "Get multiple chances to take action",
+                ]}
+              />
+            </div>
+
+            <div
+              data-reveal="left"
+              style={{ "--reveal-delay": "150ms" } as CSSProperties}
               className="h-full"
             >
               <ProFeature
                 icon={MessageCircleQuestion}
                 title="Ask after renewal"
-                description="When dates can change, Renewables prompts you to choose the next expiry after each completed renewal."
+                description="When the next date can vary, Renewables asks you to choose it after marking the current renewal complete."
                 points={[
-                  "Best for flexible renewal schedules",
-                  "Confirm the next date before continuing",
-                  "Keeps each completed renewal in your history",
+                  "Ideal for flexible renewal schedules",
+                  "Confirm the next expiry before continuing",
+                  "Carries your current reminders forward",
                 ]}
               />
+            </div>
+
+            <div
+              data-reveal="right"
+              style={{ "--reveal-delay": "225ms" } as CSSProperties}
+              className="h-full"
+            >
+              <ProFeature
+                icon={WandSparkles}
+                title="Auto-create next renewal"
+                description="For predictable schedules, Renewables calculates the next expiry automatically when you complete the current renewal."
+                points={[
+                  "Ideal for fixed renewal schedules",
+                  "Carries your current reminders forward",
+                  "Stops at your chosen end date or renewal count",
+                ]}
+              />
+            </div>
+          </div>
+
+          <div
+            data-reveal
+            style={{ "--reveal-delay": "300ms" } as CSSProperties}
+            className="mx-auto mt-10 flex max-w-2xl items-center gap-4 rounded-2xl border border-white/15 bg-white/10 p-5 text-left shadow-xl shadow-slate-950/10 backdrop-blur"
+          >
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white/15 text-white">
+              <Smartphone size={23} />
+            </div>
+
+            <div>
+              <p className="font-black text-white">Upgrade inside the app</p>
+              <p className="mt-1 text-sm leading-6 text-blue-100">
+                Open Renewables, go to Account settings, and select Upgrade to Pro.
+              </p>
             </div>
           </div>
         </div>
       </section>
 
-      <section
-        id="screenshots"
-        className="relative z-10 scroll-mt-8 px-6 py-24"
-      >
-        <div className="mx-auto max-w-7xl">
-          <SectionHeader
-            eyebrow="App Preview"
-            title="Your deadlines, clearly organized."
-            description="Start from a template, browse by category, or plan upcoming dates from the calendar."
-          />
-
-          <div className="mt-16 grid gap-8 md:grid-cols-3">
-            {screenshots.map((screenshot, index) => (
-              <article
-                key={screenshot.src}
-                data-reveal
-                style={
-                  { "--reveal-delay": `${index * 100}ms` } as CSSProperties
-                }
-                className="group rounded-[2rem] border border-white/80 bg-white/75 p-4 shadow-2xl shadow-blue-500/10 backdrop-blur transition duration-500 hover:-translate-y-2 hover:border-blue-100 hover:bg-white hover:shadow-blue-500/20"
-              >
-                <img
-                  src={screenshot.src}
-                  alt={screenshot.alt}
-                  className="aspect-[9/18] w-full rounded-[1.5rem] object-cover transition duration-500 group-hover:scale-[1.015]"
-                />
-                <p className="px-2 pt-4 text-center text-sm font-black text-slate-700">
-                  {screenshot.title}
-                </p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section id="faq" className="relative z-10 scroll-mt-8 px-6 pb-24">
+      <section id="faq" className="relative z-10 scroll-mt-8 px-6 pb-24 pt-24">
         <div className="mx-auto max-w-4xl">
           <SectionHeader
             eyebrow="Frequently Asked Questions"
@@ -768,6 +877,59 @@ function SectionHeader({ eyebrow, title, description }: SectionHeaderProps) {
       </h2>
 
       <p className="mt-4 text-lg leading-8 text-slate-600">{description}</p>
+    </div>
+  );
+}
+
+type FeatureEyebrowProps = {
+  icon: LucideIcon;
+  children: string;
+};
+
+function FeatureEyebrow({ icon: Icon, children }: FeatureEyebrowProps) {
+  return (
+    <div className="inline-flex items-center gap-2 rounded-full bg-[#246df3]/10 px-4 py-2 text-sm font-black text-[#246df3]">
+      <Icon size={16} />
+      {children}
+    </div>
+  );
+}
+
+type FeaturePointProps = {
+  children: string;
+};
+
+function FeaturePoint({ children }: FeaturePointProps) {
+  return (
+    <li className="flex items-start gap-3 font-semibold text-slate-700">
+      <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+        <Check size={14} strokeWidth={3} />
+      </span>
+      <span>{children}</span>
+    </li>
+  );
+}
+
+type FeatureScreenshotProps = {
+  src: string;
+  alt: string;
+  reveal: "left" | "right";
+};
+
+function FeatureScreenshot({ src, alt, reveal }: FeatureScreenshotProps) {
+  return (
+    <div
+      data-reveal={reveal}
+      className="relative mx-auto flex w-full max-w-xl justify-center overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-[#e8f2ff] via-white to-[#eeeaff] p-8 shadow-2xl shadow-blue-500/10 sm:p-12"
+    >
+      <div className="pointer-events-none absolute -left-16 -top-16 h-52 w-52 rounded-full bg-blue-300/30 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-20 -right-12 h-56 w-56 rounded-full bg-violet-300/30 blur-3xl" />
+      <img
+        src={src}
+        alt={alt}
+        loading="lazy"
+        className="relative max-h-[640px] w-auto max-w-full rounded-[1.75rem] object-contain shadow-slate-900/15 transition duration-500 hover:scale-[1.015]"
+      />
     </div>
   );
 }
