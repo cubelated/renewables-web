@@ -5,10 +5,11 @@ import {
   ChevronRight,
   CloudSync,
   HelpCircle,
+  Infinity as InfinityIcon,
   MessageCircleQuestion,
   Smartphone,
   Sparkles,
-  WandSparkles, Infinity
+  WandSparkles,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useEffect, useRef } from "react";
@@ -16,6 +17,10 @@ import type { CSSProperties } from "react";
 
 const GOOGLE_PLAY_URL =
   "https://play.google.com/store/apps/details?id=com.cubelated.renewly";
+
+const appUrl = new URL(window.location.origin);
+appUrl.hostname = `app.${appUrl.hostname}`;
+const WEB_APP_URL = appUrl.toString();
 
 const features = [
   {
@@ -156,7 +161,9 @@ export default function LandingPage() {
             alt="Renewables logo"
             className="h-11 w-11 rounded-xl shadow-md shadow-blue-500/20"
           />
-          <span className="text-2xl font-black tracking-tight">Renewables</span>
+          <span className="hidden text-2xl font-black tracking-tight sm:inline">
+            Renewables
+          </span>
         </a>
 
         <div className="hidden items-center gap-6 text-sm font-semibold text-slate-700 lg:flex xl:gap-8">
@@ -176,6 +183,15 @@ export default function LandingPage() {
             Support
           </a>
         </div>
+
+        <a
+          href={WEB_APP_URL}
+          className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-xl bg-[#246df3] px-4 py-2.5 text-sm font-medium text-white shadow-lg shadow-blue-500/25 transition duration-300 hover:-translate-y-0.5 hover:bg-[#195edb] hover:shadow-xl hover:shadow-blue-500/30 focus:outline-none focus:ring-4 focus:ring-[#246df3]/25 sm:px-5"
+          aria-label="Open the Renewables web app"
+        >
+          Get Started
+          <ChevronRight size={16} aria-hidden="true" />
+        </a>
       </nav>
 
       <section className="relative z-10 mx-auto grid max-w-7xl items-center gap-14 px-6 pb-24 pt-10 lg:grid-cols-2 lg:pb-32 lg:pt-20">
@@ -567,7 +583,7 @@ export default function LandingPage() {
           <div className="mt-14 grid gap-6 md:grid-cols-2">
             <div data-reveal="left" className="h-full">
               <ProFeature
-                icon={Infinity}
+                icon={InfinityIcon}
                 title="Unlimited active items"
                 description="Track every document, subscription, warranty, and renewal that matters without an active-item limit."
                 points={[
