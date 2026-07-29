@@ -14,13 +14,10 @@ import {
 import type { LucideIcon } from "lucide-react";
 import { useEffect, useRef } from "react";
 import type { CSSProperties } from "react";
+import { faqs } from "../content/faqs";
+import { GOOGLE_PLAY_URL } from "../seo";
 
-const GOOGLE_PLAY_URL =
-  "https://play.google.com/store/apps/details?id=com.cubelated.renewly";
-
-const appUrl = new URL(window.location.origin);
-appUrl.hostname = `app.${appUrl.hostname}`;
-const WEB_APP_URL = appUrl.toString();
+const WEB_APP_URL = "https://app.renewables.cubelated.com/";
 
 const features = [
   {
@@ -69,39 +66,6 @@ const syncAvatars = [
   {
     src: "/avatars/4.jpg",
     alt: "Illustrated user avatar",
-  },
-];
-
-const faqs = [
-  {
-    question: "What can I track with Renewables?",
-    answer:
-      "You can track passports, IDs, visas, licenses, insurance policies, warranties, subscriptions, vehicle documents, certifications, and almost anything with an expiry or renewal date.",
-  },
-  {
-    question: "How do reminders work?",
-    answer:
-      "Choose how far in advance you want to be notified for each item. Free accounts include one reminder per item, while Pro supports up to five reminder times per item.",
-  },
-  {
-    question: "What is included with Renewables Pro?",
-    answer:
-      "Pro includes unlimited active items, up to five reminder times per item, and recurring renewals with Auto-create next expiry and Ask after renew modes.",
-  },
-  {
-    question: "How do recurring renewals work?",
-    answer:
-      "After you mark an item as renewed, Auto-create next expiry calculates its next date from your schedule. Ask after renew prompts you to choose the next date. In both modes, Renewables records the completed renewal and carries the item forward.",
-  },
-  {
-    question: "Is Renewables available on iPhone?",
-    answer:
-      "The Android app is available on Google Play. The iPhone app and its home screen widget are currently coming soon.",
-  },
-  {
-    question: "Is my information synchronized?",
-    answer:
-      "When you are signed in, your Renewables data is securely synchronized so your important records remain available across supported devices.",
   },
 ];
 
@@ -157,8 +121,10 @@ export default function LandingPage() {
           aria-label="Renewables home"
         >
           <img
-            src="/logo.png"
+            src="/logo.webp"
             alt="Renewables logo"
+            width="1024"
+            height="1024"
             className="h-11 w-11 rounded-xl shadow-md shadow-blue-500/20"
           />
           <span className="hidden text-2xl font-black tracking-tight sm:inline">
@@ -202,18 +168,17 @@ export default function LandingPage() {
           </div>
 
           <h1 className="mt-8 max-w-3xl text-5xl font-black tracking-tight text-slate-950 sm:text-6xl lg:text-7xl">
-            Track documents and expiry dates,{" "}
+            Renewables: your life admin and{" "}
             <span className="bg-gradient-to-r from-[#246df3] via-[#4458ff] to-[#7a5cff] bg-clip-text text-transparent">
-              all in one place
+              expiry reminder app
             </span>
             .
           </h1>
 
           <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600 sm:text-xl">
-            Keeping track of your documents alone is a{" "}
-            <span className="underline">troublesome task</span>.<br></br>
-            Renewables helps you stay ahead of every important dates life asks
-            you to remember.
+            Track passports, IDs, subscriptions, warranties, licenses, and
+            other important dates in one expiry tracker. Get reminders before
+            documents and renewals expire.
           </p>
 
           <div className="mt-10 flex flex-col gap-4 sm:flex-row">
@@ -243,8 +208,11 @@ export default function LandingPage() {
           {/* Phone image - always centered */}
           <div className="motion-float relative z-40 w-full max-w-[380px]">
             <img
-              src="/app-phone.png"
-              alt="Renewables app preview on phone"
+              src="/app-phone.webp"
+              alt="Renewables life admin and expiry tracker app dashboard"
+              width="1080"
+              height="1920"
+              fetchPriority="high"
               className="mx-auto w-full drop-shadow-[0_45px_90px_rgba(30,64,175,0.42)] transition duration-500 hover:scale-[1.015]"
             />
           </div>
@@ -258,7 +226,7 @@ export default function LandingPage() {
         <div className="mx-auto max-w-7xl">
           <SectionHeader
             eyebrow="Everything you need"
-            title="Built for real-life deadlines."
+            title="An expiry tracker built for real-life deadlines."
             description="Add what matters, choose when to be reminded, and see what needs attention next."
           />
 
@@ -442,8 +410,10 @@ export default function LandingPage() {
                 <div className="flex items-center justify-between gap-4">
                   <div className="flex min-w-0 items-center gap-3">
                     <img
-                      src="/logo.png"
+                      src="/logo.webp"
                       alt="Renewables logo"
+                      width="1024"
+                      height="1024"
                       className="h-12 w-12 shrink-0 rounded-2xl shadow-lg shadow-blue-950/30 sm:h-14 sm:w-14"
                     />
                     <span className="truncate text-xl font-black tracking-tight sm:text-2xl">
@@ -534,8 +504,10 @@ export default function LandingPage() {
                 {syncAvatars.map((avatar, index) => (
                   <img
                     key={avatar.src}
-                    src={avatar.src}
+                    src={avatar.src.replace(".jpg", ".webp")}
                     alt={avatar.alt}
+                    width="256"
+                    height="256"
                     loading="lazy"
                     referrerPolicy="no-referrer"
                     style={{ zIndex: syncAvatars.length - index }}
@@ -707,8 +679,10 @@ export default function LandingPage() {
             <div className="max-w-2xl">
               <div className="flex items-center gap-3">
                 <img
-                  src="/logo.png"
+                  src="/logo.webp"
                   alt="Renewables logo"
+                  width="1024"
+                  height="1024"
                   className="h-14 w-14 rounded-2xl shadow-xl shadow-blue-950/20"
                 />
                 <h2 className="text-3xl font-black tracking-tight sm:text-4xl">
@@ -734,8 +708,10 @@ export default function LandingPage() {
           <div>
             <div className="flex items-center gap-3">
               <img
-                src="/logo.png"
+                src="/logo.webp"
                 alt="Renewables logo"
+                width="1024"
+                height="1024"
                 className="h-10 w-10 rounded-xl"
               />
               <span className="text-xl font-black">Renewables</span>
@@ -941,8 +917,10 @@ function FeatureScreenshot({ src, alt, reveal }: FeatureScreenshotProps) {
       <div className="pointer-events-none absolute -left-16 -top-16 h-52 w-52 rounded-full bg-blue-300/30 blur-3xl" />
       <div className="pointer-events-none absolute -bottom-20 -right-12 h-56 w-56 rounded-full bg-violet-300/30 blur-3xl" />
       <img
-        src={src}
+        src={src.replace(".png", ".webp")}
         alt={alt}
+        width="1080"
+        height="1920"
         loading="lazy"
         className="relative max-h-[640px] w-auto max-w-full rounded-[1.75rem] object-contain shadow-slate-900/15 transition duration-500 hover:scale-[1.015]"
       />
