@@ -1,6 +1,6 @@
 # OCR demonstration integration
 
-The existing OCR section now pairs the requested heading and copy with one inline, native HTML5 player. Desktop keeps text on the left and a vertical video on the right; narrow screens place text first and the player below. The rest of the redesign, pricing, FAQs, metadata, legal pages, and API are retained. No new dependencies, video service, modal, analytics, or production deployment.
+The OCR section pairs the requested heading and copy with one inline, native HTML5 player. Desktop keeps text on the left and a vertical video on the right; narrow screens place text first and the player below. Following owner feedback, it now uses the original landing page's typography and rounded feature styling. Pricing facts, FAQs, metadata, legal pages, and API are retained. No new dependencies, video service, modal, analytics, or production deployment.
 
 ## Media inspection
 
@@ -38,7 +38,7 @@ Expect HEAD `200` with `Content-Type: video/mp4`, `Content-Length: 1647723`, and
 
 ## Files changed for this integration
 
-- UI: `src/components/FeatureVideo.tsx`, `src/pages/LandingPage.tsx`, `src/react-app/index.css`.
+- UI: `src/components/FeatureVideo.tsx`, `src/components/landing/ProductHighlights.tsx`, `src/react-app/index.css`.
 - Media configuration: `src/content/media.ts`, `src/content/ocr-video.ts`, `vite.config.ts`, `src/react-app/vite-env.d.ts`.
 - Delivery: `src/worker/video.ts`, `src/worker/index.ts`, generated `src/worker/env.d.ts`, `wrangler.json`.
 - Build/verification: `src/react-app/entry-server.tsx`, `scripts/prerender.mjs`, `scripts/validate-seo.mjs`, `scripts/feature-video.test.mjs`, `scripts/video-range.test.mjs`, `package.json`, `eslint.config.js`.

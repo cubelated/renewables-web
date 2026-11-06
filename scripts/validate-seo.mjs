@@ -16,16 +16,19 @@ const pages = [
   },
   {
     file: "privacy/index.html",
+    heading: "Privacy Policy",
     canonical: "https://renewables.cubelated.com/privacy",
     robots: "index, follow",
   },
   {
     file: "terms/index.html",
+    heading: "Terms of Service",
     canonical: "https://renewables.cubelated.com/terms",
     robots: "index, follow",
   },
   {
     file: "support/index.html",
+    heading: "How can we help?",
     canonical: "https://renewables.cubelated.com/support",
     robots: "index, follow",
   },
@@ -41,6 +44,12 @@ for (const page of pages) {
 
   assert(html.includes("<h1"), `${page.file} must contain a pre-rendered h1`);
   assert([...html.matchAll(/<h1[\s>]/g)].length === 1, `${page.file} must have exactly one h1`);
+  if (page.heading) {
+    assert(
+      html.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/)?.[1] === page.heading,
+      `${page.file} must render its own content instead of a fallback page`,
+    );
+  }
   assert(
     html.includes(`rel="canonical" href="${page.canonical}"`),
     `${page.file} has an incorrect canonical URL`,
@@ -95,7 +104,7 @@ for (const page of pages) {
       await access(path.join(distDir, poster));
       await access(path.join(distDir, "media/ocr-demo.mp4"));
     }
-    const hero = html.match(/<img[^>]*class="hero-phone"[^>]*>/)?.[0];
+    const hero = html.match(/<img[^>]*class="[^"]*\bhero-phone\b[^"]*"[^>]*>/)?.[0];
     assert(hero && !hero.includes('loading="lazy"'), "Hero image must load eagerly");
     assert(hero.includes('fetchPriority="high"') || hero.includes('fetchpriority="high"'), "Hero must have high fetch priority");
     const hrefs = [...html.matchAll(/<a\b[^>]*href="([^"]*)"/g)].map((match) => match[1]);

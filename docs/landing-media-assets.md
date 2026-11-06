@@ -9,19 +9,20 @@ The landing page uses genuine existing app UI, the two supplied screenshots, and
 | `public/app-phone.webp` | Existing `app-phone.png`; hero dashboard | 720 × 1280, 9:16; ~43 KB | Eager, high priority. Existing June 2026 demo data and Cubelated greeting; replace with a current, sanitized dashboard when available. The original decorative phone frame is retained. |
 | `public/screenshot-ocr-review.webp` | Supplied `891705_0.jpg`; scan review | 700 × 1501; ~41 KB | Genuine review UI, no document image. Shows three reminders, so the visible caption explains plan-dependent settings. |
 | `public/screenshot-renewal-checklist.webp` | Supplied `891706_0.jpg`; Renewal Assistant | 700 × 1501; ~45 KB | Genuine passport checklist and progress. Keep sources and informational caveats readable. |
-| `public/logo.webp` | Existing `logo.png`; header/footer | 128 × 128; ~3 KB | Same logo; rendered at 28–36 px. Original PNG remains available. |
+| `public/logo.webp` | Existing `logo.png`; header/footer | 128 × 128; ~3 KB | Same logo; original header/footer sizing restored. Original PNG remains available. |
 | `public/google-play-logo.svg` | Existing Google Play mark | 19 × 21 rendered | Decorative icon beside explicit CTA text. |
 | `public/social-preview.png` | Existing social image, refreshed with current message and authentic dashboard | 1200 × 630 | Keep this URL stable for Open Graph/Twitter. |
-| `public/screenshot-template.webp` | Optimized existing `screenshot-template.png` | 640 × 1138, ~34 KB | Retained but not displayed: old picker does not show the current country grouping. Text-first examples are used instead. |
-| `public/screenshot-calendar.webp` | Optimized existing `screenshot-calendar.png` | 640 × 1138, ~30 KB | Available for later use; calendar currently has a concise feature card. |
+| `public/screenshot-template.webp` | Optimized existing `screenshot-template.png` | 640 × 1138, ~34 KB | Restored in the original template feature layout. Described as a general picker; selected country examples appear separately as text. |
+| `public/screenshot-calendar.webp` | Optimized existing `screenshot-calendar.png` | 640 × 1138, ~30 KB | Restored in the original calendar feature section; lazy-loaded. |
+| `public/avatars/1.webp` through `4.webp` | Existing illustrated avatars | 256 × 256 | Original cloud-sync illustration restored. These are illustrations, not customer testimonials. |
 
-The original PNG assets remain intact. WebP versions were resized and compressed without changing UI content. Supplied screenshots retain their full aspect ratio and are lazy-loaded below the fold. The old avatar assets are unused; they are not presented as testimonials.
+The original PNG assets remain intact. WebP versions were resized and compressed without changing UI content. Supplied screenshots retain their full aspect ratio and are lazy-loaded below the fold. The original HTML widget illustration is retained and labeled as an illustration.
 
 ## Recommended replacements
 
-- Replace `public/app-phone.webp` with a current demo dashboard: about 720 × 1280 or 1080 × 1920, transparent frame if retaining the existing composition. Update the hero `width`/`height` if the ratio changes. Integration: `Hero` in `src/pages/LandingPage.tsx` and the single preload in `index.html`.
-- Add a current country-grouped picker at `public/screenshot-country-templates.webp`: 700–900 px wide, roughly 9:19 portrait. Use demo entries only. Integrate in `Templates` in `src/pages/LandingPage.tsx`; the current text-first section is complete without it. Do not re-label the old picker as a current country screenshot.
-- Future scan/checklist replacements should overwrite `public/screenshot-ocr-review.webp` and `public/screenshot-renewal-checklist.webp`, ideally keeping 700 × 1501. Update `Screenshot` dimensions, alt text, and captions if content or aspect ratio changes. Review screenshots for private names, IDs, attachments, account addresses, and tokens before publishing.
+- Replace `public/app-phone.webp` with a current demo dashboard: about 720 × 1280 or 1080 × 1920, transparent frame if retaining the existing composition. Update the hero `width`/`height` if the ratio changes. Integration: the hero in `src/pages/LandingPage.tsx` and the single preload in `index.html`.
+- Add a current country-grouped picker at `public/screenshot-country-templates.webp`: 700–900 px wide, roughly 9:19 portrait. Use demo entries only. Integrate in `Templates` in `src/components/landing/ProductHighlights.tsx`; the current section is complete without it. Do not re-label the old picker as a current country screenshot.
+- Future scan/checklist replacements should overwrite `public/screenshot-ocr-review.webp` and `public/screenshot-renewal-checklist.webp`, ideally keeping 700 × 1501. Update dimensions, alt text, and captions in `FeatureVideo` / `FeatureScreenshot` usage if content or aspect ratio changes. Review screenshots for private names, IDs, attachments, account addresses, and tokens before publishing.
 - Prefer WebP or AVIF, a useful source resolution near 2× rendered width, and approximately 30–100 KB per portrait. Do not stretch, invent, or silently change sample scan results.
 
 ## OCR video integration

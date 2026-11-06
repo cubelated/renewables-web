@@ -4,7 +4,11 @@ For the subsequent OCR demonstration integration, media inspection, delivery, an
 
 ## Scope and architecture
 
-Implemented the Scan → Track → Prepare → Renew story, accessible navigation, authentic hero/scanning/checklist images, selected country templates, a concise six-feature grid, balanced Free/Pro cards, 11 FAQs, and a final download CTA. Blue/indigo/violet, logo, existing dependencies, Worker API, legal content, and public route names are retained. No deployment, app/database/RevenueCat changes, new billing, analytics service, or tracking pixel was performed.
+The design was subsequently restored to the original layout from `1910e81`, following the owner's feedback. The original pale background, large bold typography, layered hero screenshot, rounded translucent cards, alternating feature sections, widget/cloud illustrations, dark blue/violet pricing band, FAQ cards, download panel, and footer are retained. OCR video, Renewal Assistant, selected country templates, accurate Free/Pro comparisons, and updated descriptions use that existing visual language. Continuous animations and observer-dependent content hiding remain removed.
+
+Implemented the Scan → Track → Prepare → Renew story, accessible navigation, authentic hero/scanning/checklist images, selected country templates, balanced Free/Pro cards, 11 FAQs, and a final download CTA. Blue/indigo/violet, logo, existing dependencies, Worker API, legal content, and public route names are retained. No deployment, app/database/RevenueCat changes, new billing, analytics service, or tracking pixel was performed.
+
+The merged package scripts had dropped SSR/prerendering from the production build. Cloudflare's `404-page` routing requires generated files such as `dist/terms/index.html`; a client-only build does not produce them. `npm run build` now includes SSR and prerendering again. Both `check` and manual `deploy` validate the generated pages, including their actual legal-page headings, before proceeding. The Terms text itself is unchanged.
 
 The starting local checkout (`d337032`) predates the upstream prerender setup. The current upstream `cubelated/renewables-web` versions of `App`, hydration entry, `entry-server`, `seo`, prerender/validation scripts, 404 page, robots, sitemap, and Worker asset routing were inspected and restored locally, then adapted for the refresh. This keeps the upstream React SSR-to-static HTML architecture and Hono Worker, rather than introducing a different hosting system. Legal page bodies are unchanged.
 
@@ -23,7 +27,7 @@ The starting local checkout (`d337032`) predates the upstream prerender setup. T
 
 `src/seo.ts` supplies the landing title/description, canonical URLs, social metadata, SoftwareApplication features, and FAQPage JSON-LD. FAQ JSON-LD uses the same answers as the visible page. No invented ratings, reviews, Pro prices, or released iOS claim. The build writes real HTML for `/`, `/privacy`, `/terms`, `/support`, and `404.html`; the Worker serves static output with upstream `404-page` and `drop-trailing-slash` routing.
 
-Optimized screenshot payloads, fixed intrinsic image dimensions, high-priority eager hero, lazy feature screenshots, local system fonts, and no new dependencies. Large continuously moving shapes and observer-dependent hiding were removed. Reduced motion disables smooth scrolling/transitions. The page remains readable without JavaScript. Browser dark preference retains the intentional light design, with a dark Renewal Assistant feature band.
+Optimized screenshot payloads, fixed intrinsic image dimensions, high-priority eager hero, lazy feature screenshots, local system fonts, and no new dependencies. Large continuously moving shapes and observer-dependent hiding were removed. Reduced motion disables smooth scrolling/transitions. The page remains readable without JavaScript. Browser dark preference retains the intentional light design, with the original dark pricing feature band.
 
 ## Conversion preparation (no collection enabled)
 
@@ -67,7 +71,7 @@ Both scripts select `wrangler.json` explicitly, so an old ignored `.wrangler/dep
 
 ## Changed files
 
-- Page and UI: `src/pages/LandingPage.tsx`, `src/components/landing/Header.tsx`, `src/components/landing/PricingAndFaq.tsx`, `src/components/landing/shared.tsx`, `src/react-app/index.css`.
+- Page and UI: `src/pages/LandingPage.tsx`, `src/components/landing/Header.tsx`, `src/components/landing/ProductHighlights.tsx`, `src/components/landing/PricingAndFaq.tsx`, `src/components/landing/shared.tsx`, `src/react-app/index.css`.
 - Shared product and attribution: `src/content/product.ts`, `src/content/faqs.ts`, `src/lib/cta-links.ts`, `scripts/cta-links.test.mjs`.
 - Prerendering and SEO (restored from upstream, then adapted): `src/seo.ts`, `src/react-app/App.tsx`, `src/react-app/main.tsx`, `src/react-app/entry-server.tsx`, `src/pages/NotFoundPage.tsx`, `scripts/prerender.mjs`, `scripts/validate-seo.mjs`, `index.html`, `public/robots.txt`, `public/sitemap.xml`.
 - Build and hosting: `package.json`, `wrangler.json`, `eslint.config.js`, `.gitignore`. Dependency versions and lockfile are unchanged.
@@ -75,6 +79,18 @@ Both scripts select `wrangler.json` explicitly, so an old ignored `.wrangler/dep
 - Documentation: `README.md`, `docs/landing-refresh.md`, `docs/landing-media-assets.md`.
 
 ## Validation results
+
+### Original-design restoration and Terms fix
+
+- `npm ci`, `npm run lint`, `npm test`, `npm run build`, and `npm run check` passed. All 20 current tests passed. Lint has only the two existing generated-type warnings. Check includes five-page SEO validation and a deployment dry run; no deployment occurred.
+- Current client bundle: 265.36 KB (79.75 KB gzip); CSS: 67.60 KB (11.33 KB gzip). No dependency changes. These are build sizes, not a production performance score.
+- Local Cloudflare routing returned 200 for home, Terms, Privacy, Support, and the existing API, with 404 for an unknown route. The Terms page rendered its own heading and canonical at 320, 375, 768, and 1440 px. Trailing-slash access, the footer Terms link, page refresh, and Back to Home passed.
+- Headless Chrome passed the four landing widths, all 15 image elements, keyboard navigation and FAQ interaction, section anchors, campaign filtering, reduced motion, dark preference, and JavaScript-disabled rendering. No horizontal overflow, browser exceptions, failed asset requests, or measured initial layout shifts. The primary hero CTA fits the checked mobile viewports.
+- OCR playback passed at all four widths: poster, zero MP4 requests before interaction, keyboard play/pause, native controls, seeking, replay, off-screen/hidden-page pause, static error fallback, and no-JavaScript link. Video MIME, full/partial byte responses, HEAD, and invalid range status were verified through the local Worker.
+- The local Worker smoke checks used the already-installed compatible Wrangler 4.156.1 executable from the sibling app. The website's pinned dependencies and compatibility date remain unchanged. No real-device Android/iOS Safari, production, or throttled field-performance testing was performed.
+- Review artifacts: `.qa/restored-landing-{320,375,768,1440}.png`, `.qa/restored-terms-{320,375,768,1440}.png`, feature screenshots, and `.qa/restored-design-results.json`. Requested promotional poster is still missing; the genuine scan-review screenshot remains the fallback, as documented in the media inventory.
+
+### Initial refresh (before restoration)
 
 - `npm ci`: passed; no dependency or lockfile changes.
 - `npm run lint`: passed with zero errors and two unused-disable warnings in the unchanged generated `worker-configuration.d.ts`.
