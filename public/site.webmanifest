@@ -1,6 +1,10 @@
 {
-  "name": "MyWebSite",
-  "short_name": "MySite",
+  "id": "/",
+  "name": "Renewables: Life Admin & Expiry Tracker",
+  "short_name": "Renewables",
+  "description": "Track expiry dates, renewals, and life admin reminders in one place.",
+  "start_url": "/",
+  "scope": "/",
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",
@@ -15,7 +19,7 @@
       "purpose": "maskable"
     }
   ],
-  "theme_color": "#ffffff",
-  "background_color": "#ffffff",
+  "theme_color": "#246df3",
+  "background_color": "#f7fbff",
   "display": "standalone"
 }

@@ -144,6 +144,7 @@ out
 dist
 .ssr/
 .qa/
+.ssr
 
 # Gatsby files
 .cache/
