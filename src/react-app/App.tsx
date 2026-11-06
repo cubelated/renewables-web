@@ -1,15 +1,25 @@
 import "./index.css";
 import LandingPage from "../pages/LandingPage.tsx";
+import NotFoundPage from "../pages/NotFoundPage.tsx";
 import PrivacyPolicyPage from "../pages/PrivacyPolicyPage.tsx";
 import TermsPage from "../pages/TermsPage.tsx";
 import SupportPage from "../pages/SupportPage.tsx";
+import { normalizePath } from "../seo.ts";
 
-export default function App() {
-  const path = window.location.pathname;
+type AppProps = {
+  path?: string;
+};
 
-  if (path === "/privacy") return <PrivacyPolicyPage />;
-  if (path === "/terms") return <TermsPage />;
-  if (path === "/support") return <SupportPage />;
+export default function App({ path }: AppProps) {
+  const currentPath = normalizePath(
+    path ??
+      (typeof window === "undefined" ? "/" : window.location.pathname),
+  );
 
-  return <LandingPage />;
+  if (currentPath === "/") return <LandingPage />;
+  if (currentPath === "/privacy") return <PrivacyPolicyPage />;
+  if (currentPath === "/terms") return <TermsPage />;
+  if (currentPath === "/support") return <SupportPage />;
+
+  return <NotFoundPage />;
 }

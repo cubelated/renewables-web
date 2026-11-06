@@ -39,12 +39,13 @@
 	},
 	"private": true,
 	"scripts": {
-		"build": "tsc -b && vite build",
-		"cf-typegen": "wrangler types",
-		"check": "tsc && vite build && wrangler deploy --dry-run",
-		"deploy": "wrangler deploy",
+		"build": "tsc -b && vite build && vite build --ssr src/react-app/entry-server.tsx --outDir .ssr && node scripts/prerender.mjs",
+		"cf-typegen": "wrangler types src/worker/env.d.ts --include-runtime=false --config wrangler.json",
+		"check": "npm run build && node scripts/validate-seo.mjs && wrangler deploy --dry-run --config wrangler.json",
+		"deploy": "wrangler deploy --config wrangler.json",
 		"dev": "vite",
 		"lint": "eslint .",
+		"test": "node --test scripts/cta-links.test.mjs scripts/video-range.test.mjs scripts/feature-video.test.mjs",
 		"preview": "npm run build && vite preview"
 	},
 	"type": "module"

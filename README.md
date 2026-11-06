@@ -10,6 +10,8 @@
 
 ## About Renewables
 
+See [landing refresh notes](docs/landing-refresh.md) for verified product claims, conversion hooks, SEO, checks, and manual Cloudflare Workers deployment. See [media inventory](docs/landing-media-assets.md) for screenshot sources and replacement paths.
+
 Renewables helps individuals organize and track:
 
 * Passports
@@ -45,7 +47,7 @@ Users receive reminders before important dates and can view upcoming deadlines t
 
 * Static site generation
 * Optimized assets
-* Fast global delivery through Cloudflare Pages
+* Fast global delivery through Cloudflare Workers static assets
 
 ## Technology Stack
 
@@ -53,7 +55,7 @@ Users receive reminders before important dates and can view upcoming deadlines t
 * TypeScript
 * Vite
 * Tailwind CSS
-* Cloudflare Pages
+* Cloudflare Workers
 * Lucide React Icons
 
 ## Getting Started
@@ -113,7 +115,7 @@ public/
 
 ## Deployment
 
-This project is designed for deployment on Cloudflare Pages.
+This project uses Cloudflare Workers and prerendered static assets. Run the checks and follow the [manual deployment instructions](docs/landing-refresh.md#manual-deployment) when ready to publish.
 
 ### Build Command
 
