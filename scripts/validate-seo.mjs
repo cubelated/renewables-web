@@ -33,14 +33,50 @@ const pages = [
     robots: "index, follow",
   },
   {
+    file: "tools/expiry-calculator/index.html",
+    heading: "Expiry date calculator",
+    canonical: "https://renewables.cubelated.com/tools/expiry-calculator",
+    robots: "index, follow",
+    calculator: true,
+  },
+  {
     file: "404.html",
     canonical: "https://renewables.cubelated.com/404",
     robots: "noindex, follow",
   },
 ];
 
+const titles = new Set();
+const descriptions = new Set();
 for (const page of pages) {
   const html = await readFile(path.join(distDir, page.file), "utf8");
+  const head = html.match(/<head\b[^>]*>([\s\S]*?)<\/head>/i)?.[1];
+  assert(head, `${page.file} needs a complete HTML head`);
+  const pageTitles = [...head.matchAll(/<title\b[^>]*>([\s\S]*?)<\/title>/gi)];
+  assert(pageTitles.length === 1 && pageTitles[0][1].trim(), `${page.file} needs exactly one nonempty title`);
+  const title = pageTitles[0][1];
+  const description = metaContent(head, "name", "description");
+  assert(!titles.has(title), `${page.file} duplicates another page title`);
+  assert(!descriptions.has(description), `${page.file} duplicates another page description`);
+  titles.add(title); descriptions.add(description);
+  assert([...head.matchAll(/<link\b[^>]*rel="canonical"[^>]*>/gi)].length === 1, `${page.file} needs exactly one canonical`);
+  assert(metaContent(head, "property", "og:title") === title, `${page.file} social title differs from its title`);
+  assert(metaContent(head, "property", "og:description") === description, `${page.file} social description differs from its description`);
+  assert(metaContent(head, "property", "og:url") === page.canonical, `${page.file} social URL differs from its canonical`);
+  assert(metaContent(head, "name", "twitter:title") === title, `${page.file} Twitter title differs from its title`);
+  assert(metaContent(head, "name", "twitter:description") === description, `${page.file} Twitter description differs from its description`);
+  const socialImage = metaContent(head, "property", "og:image");
+  assert(metaContent(head, "name", "twitter:image") === socialImage, `${page.file} social images differ`);
+  assert(metaContent(head, "name", "twitter:image:alt") === metaContent(head, "property", "og:image:alt"), `${page.file} needs consistent social image descriptions`);
+  const imageUrl = new URL(socialImage);
+  assert(imageUrl.protocol === "https:", `${page.file} needs an HTTPS social image`);
+  if (imageUrl.origin === "https://renewables.cubelated.com") {
+    const image = await readFile(path.join(distDir, imageUrl.pathname));
+    assert(image.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])), `${page.file} social image must be an actual PNG`);
+    assert(metaContent(head, "property", "og:image:type") === "image/png", `${page.file} has an incorrect social image MIME type`);
+    assert(Number(metaContent(head, "property", "og:image:width")) === image.readUInt32BE(16), `${page.file} has incorrect social image width`);
+    assert(Number(metaContent(head, "property", "og:image:height")) === image.readUInt32BE(20), `${page.file} has incorrect social image height`);
+  }
 
   assert(html.includes("<h1"), `${page.file} must contain a pre-rendered h1`);
   assert([...html.matchAll(/<h1[\s>]/g)].length === 1, `${page.file} must have exactly one h1`);
@@ -112,6 +148,40 @@ for (const page of pages) {
       assert(href && href !== "#", "All links need a real destination");
       if (href.startsWith("#")) assert(html.includes(`id="${href.slice(1)}"`), `Broken section link: ${href}`);
     }
+  } else if (page.calculator) {
+    assert(jsonLdMatches.length === 1, "Calculator needs its own JSON-LD block");
+    const graph = JSON.parse(jsonLdMatches[0][1])["@graph"];
+    assert(!graph.some((entry) => entry["@type"] === "FAQPage" || entry.aggregateRating || entry.review), "Do not reuse homepage FAQs or invent ratings");
+    const app = graph.find((entry) => entry["@type"] === "WebApplication");
+    assert(app?.isAccessibleForFree === true && app?.offers?.price === "0", "Calculator must be described truthfully as free");
+    const webPage = graph.find((entry) => entry["@type"] === "WebPage");
+    const website = graph.find((entry) => entry["@type"] === "WebSite");
+    const breadcrumbs = graph.find((entry) => entry["@type"] === "BreadcrumbList");
+    assert(webPage?.url === page.canonical && app?.url === page.canonical, "Calculator schema URLs must match its canonical");
+    assert(webPage?.mainEntity?.["@id"] === app?.["@id"] && app?.mainEntityOfPage?.["@id"] === webPage?.["@id"], "Calculator schema must connect the page and application");
+    assert(webPage?.inLanguage === "en" && html.includes('<html lang="en">'), "Indexed calculator language must describe its prerendered English content");
+    assert(["en", "zh-TW", "id-ID"].every((language) => app?.inLanguage?.includes(language)), "Calculator app schema must describe supported languages");
+    assert(website?.["@id"] === webPage?.isPartOf?.["@id"], "Calculator schema must identify its website");
+    assert(breadcrumbs?.["@id"] === webPage?.breadcrumb?.["@id"], "Calculator must connect its breadcrumb schema");
+    assert(breadcrumbs?.itemListElement?.at(-1)?.item === page.canonical, "Breadcrumb destination must match the calculator canonical");
+    assert(new Set(graph.map((entry) => entry["@id"])).size === graph.length, "Calculator schema IDs must be unique");
+    assert(title === "Free Expiry Date Calculator &amp; Calendar Converter | Renewables", "Calculator title is missing");
+    assert(!head.includes("hreflang="), "Do not advertise alternate language URLs without prerendered localized pages");
+    assert(html.includes('class="calc-workspace" data-nosnippet=""'), "Calculator controls should not supply search snippet text");
+    assert(!/<details[^>]*class="calc-help"[^>]*\bopen(?:[=\s>])/.test(html), "SEO explanations must preserve the minimal collapsed help layout");
+    assert(!html.includes('href="/app-phone.webp"'), "Calculator must not preload the unrelated homepage hero");
+    for (const text of ["How expiry countdowns work", "How reminder offsets work", "How calendar conversion works", "How date differences are counted", "Choosing a date format", "Which calendars can I convert?", "Why time zones matter", "Frequently asked questions", "185 days", "民國115年11月11日"]) {
+      assert(html.includes(text), `Calculator explanation must be prerendered: ${text}`);
+    }
+    const headings = [...html.matchAll(/<h([1-6])\b[^>]*>/g)].map((match) => Number(match[1]));
+    for (let i = 1; i < headings.length; i++) assert(headings[i] <= headings[i - 1] + 1, "Calculator heading levels must not skip");
+    const home = await readFile(path.join(distDir, "index.html"), "utf8");
+    const header = home.match(/<header\b[^>]*>([\s\S]*?)<\/header>/)?.[1];
+    assert(header?.includes('href="/tools/expiry-calculator"'), "Homepage navigation must link to the calculator");
+    const calculatorLinks = [...home.matchAll(/<a\b[^>]*href="\/tools\/expiry-calculator"[^>]*>([\s\S]*?)<\/a>/g)];
+    assert(calculatorLinks.some((link) => link[1].replace(/<[^>]*>/g, "").trim() === "Free expiry date calculator"), "Homepage needs a descriptive calculator link");
+    assert(html.includes('href="https://app.renewables.cubelated.com/"'), "Calculator web CTA must use the verified destination");
+    assert(html.includes('href="https://play.google.com/store/apps/details?id=com.cubelated.renewly"'), "Calculator Play CTA must use the verified destination");
   } else {
     assert(
       jsonLdMatches.length === 0,
@@ -127,7 +197,10 @@ for (const page of pages) {
 }
 
 const sitemap = await readFile(path.join(distDir, "sitemap.xml"), "utf8");
-for (const page of pages.slice(0, 4)) {
+const sitemapUrls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
+assert(new Set(sitemapUrls).size === sitemapUrls.length, "Sitemap URLs must be unique");
+assert(sitemapUrls.length === pages.filter((page) => page.robots.startsWith("index")).length, "Sitemap must contain only canonical, indexable pages");
+for (const page of pages.filter((page) => page.robots.startsWith("index"))) {
   assert(
     sitemap.includes(`<loc>${page.canonical}</loc>`),
     `sitemap.xml is missing ${page.canonical}`,
@@ -139,11 +212,20 @@ assert(
   robots.includes("Sitemap: https://renewables.cubelated.com/sitemap.xml"),
   "robots.txt must advertise the sitemap",
 );
+assert(!/^Disallow:\s*\/\s*$/im.test(robots) && !/^Disallow:\s*\/tools(?:\/|\s|$)/im.test(robots), "robots.txt must allow public calculators");
 
 console.log(`Validated SEO output for ${pages.length} pages.`);
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
+}
+
+function metaContent(head, attribute, name) {
+  const tags = [...head.matchAll(new RegExp(`<meta\\b[^>]*\\b${attribute}="${name}"[^>]*>`, "gi"))];
+  assert(tags.length === 1, `Expected exactly one ${attribute}="${name}" tag`);
+  const content = tags[0][0].match(/\bcontent="([^"]*)"/)?.[1];
+  assert(content?.trim(), `Empty ${name} metadata`);
+  return content;
 }
 
 function escapeHtml(value) {

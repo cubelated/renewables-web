@@ -45,7 +45,8 @@
 		"deploy": "npm run build && node scripts/validate-seo.mjs && wrangler deploy --config wrangler.json",
 		"dev": "vite",
 		"lint": "eslint .",
-		"test": "node --test scripts/cta-links.test.mjs scripts/video-range.test.mjs scripts/feature-video.test.mjs",
+		"test": "node --test scripts/*.test.mjs",
+		"test:browser": "node scripts/calculator-browser-check.mjs",
 		"preview": "npm run build && vite preview"
 	},
 	"type": "module"

@@ -42,6 +42,9 @@ async function writePage(pathname, outputPath) {
 function injectPage(html, pathname) {
   const seo = getPageSeo(pathname);
   const renderedApp = render(pathname);
+  if (!renderedApp.includes("<h1")) {
+    throw new Error(`Refusing to emit an empty or incomplete page for ${pathname}`);
+  }
   const withoutSeo = html
     .replace(/\s*<title[^>]*data-seo[^>]*>[\s\S]*?<\/title>/gi, "")
     .replace(/\s*<(?:meta|link)[^>]*data-seo[^>]*>/gi, "")
@@ -50,7 +53,9 @@ function injectPage(html, pathname) {
       "",
     );
 
-  return withoutSeo
+  // Only the homepage uses the phone hero; other routes must not download it.
+  const pageTemplate = pathname === "/" ? withoutSeo : withoutSeo.replace(/\s*<link\b[^>]*rel="preload"[^>]*href="\/app-phone\.webp"[^>]*>/gi, "");
+  return pageTemplate
     .replace("</head>", `${renderHead(seo)}\n</head>`)
     .replace('<div id="root"></div>', `<div id="root">${renderedApp}</div>`);
 }
@@ -78,13 +83,15 @@ function renderHead(seo) {
 	<meta property="og:description" content="${description}" data-seo="og" />
 	<meta property="og:url" content="${canonical}" data-seo="og" />
 	<meta property="og:image" content="${image}" data-seo="og" />
+	<meta property="og:image:type" content="image/png" data-seo="og" />
 	<meta property="og:image:width" content="1200" data-seo="og" />
 	<meta property="og:image:height" content="630" data-seo="og" />
 	<meta property="og:image:alt" content="Renewables document expiry tracker dashboard" data-seo="og" />
 	<meta name="twitter:card" content="summary_large_image" data-seo="twitter" />
 	<meta name="twitter:title" content="${title}" data-seo="twitter" />
 	<meta name="twitter:description" content="${description}" data-seo="twitter" />
-	<meta name="twitter:image" content="${image}" data-seo="twitter" />${structuredData}`;
+	<meta name="twitter:image" content="${image}" data-seo="twitter" />
+	<meta name="twitter:image:alt" content="Renewables document expiry tracker dashboard" data-seo="twitter" />${structuredData}`;
 }
 
 function escapeHtml(value) {

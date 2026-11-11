@@ -4,7 +4,7 @@ import { Brand, CtaLink } from "./shared";
 
 const navigation = [
   ["Features", "#features"], ["How It Works", "#how-it-works"],
-  ["Pricing", "#pricing"], ["FAQ", "#faq"],
+  ["Calculator", "/tools/expiry-calculator"], ["Pricing", "#pricing"], ["FAQ", "#faq"],
   ["Privacy", "/privacy"], ["Support", "/support"],
 ] as const;
 

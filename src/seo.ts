@@ -5,7 +5,7 @@ export const SITE_URL = "https://renewables.cubelated.com";
 export const SOCIAL_IMAGE_URL = `${SITE_URL}/social-preview.png`;
 export const GOOGLE_PLAY_URL = product.googlePlayUrl;
 
-export const INDEXED_PATHS = ["/", "/privacy", "/terms", "/support"] as const;
+export const INDEXED_PATHS = ["/", "/privacy", "/terms", "/support", "/tools/expiry-calculator"] as const;
 
 type IndexedPath = (typeof INDEXED_PATHS)[number];
 
@@ -24,8 +24,12 @@ const PAGE_COPY: Record<
   IndexedPath,
   Pick<PageSeo, "title" | "description">
 > = {
+  "/tools/expiry-calculator": {
+    title: "Free Expiry Date Calculator & Calendar Converter | Renewables",
+    description: "Count days until expiry, compare dates, plan reminders, and convert Gregorian, ROC, Buddhist and Japanese dates. Free, private, with time zone support.",
+  },
   "/": {
-    title: "Renewables — Document Expiry Tracker & Renewal Reminder",
+    title: "Renewables - Document Expiry Tracker & Renewal Reminder",
     description: HOME_DESCRIPTION,
   },
   "/privacy": {
@@ -69,7 +73,47 @@ export function getPageSeo(pathname: string): PageSeo {
     ...copy,
     canonical: path === "/" ? `${SITE_URL}/` : `${SITE_URL}${path}`,
     robots: "index, follow, max-image-preview:large",
-    structuredData: path === "/" ? homeStructuredData() : null,
+    structuredData: path === "/" ? homeStructuredData() : path === "/tools/expiry-calculator" ? calculatorStructuredData() : null,
+  };
+}
+
+function calculatorStructuredData(): Record<string, unknown> {
+  const url = `${SITE_URL}/tools/expiry-calculator`;
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite", "@id": `${SITE_URL}/#website`,
+        url: `${SITE_URL}/`, name: "Renewables", inLanguage: "en",
+      },
+      {
+        "@type": "WebPage", "@id": `${url}#page`, url,
+        name: PAGE_COPY["/tools/expiry-calculator"].title,
+        description: PAGE_COPY["/tools/expiry-calculator"].description,
+        inLanguage: "en", isAccessibleForFree: true,
+        isPartOf: { "@id": `${SITE_URL}/#website` },
+        mainEntity: { "@id": `${url}#calculator` },
+        breadcrumb: { "@id": `${url}#breadcrumbs` },
+      },
+      {
+        "@type": "WebApplication", "@id": `${url}#calculator`, url,
+        name: "Free Expiry Date Calculator & Calendar Converter",
+        description: PAGE_COPY["/tools/expiry-calculator"].description,
+        mainEntityOfPage: { "@id": `${url}#page` },
+        applicationCategory: "UtilitiesApplication", operatingSystem: "Any",
+        browserRequirements: "Requires JavaScript. Calculations run locally in your browser.",
+        isAccessibleForFree: true, inLanguage: ["en", "zh-TW", "id-ID"],
+        featureList: ["Expiry countdown", "Calendar date difference", "Reminder date arithmetic", "Conversion between Gregorian, ROC, Thai Buddhist and Japanese era calendars", "Explicit date input and result formats", "IANA time zone selection"],
+        offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+      },
+      {
+        "@type": "BreadcrumbList", "@id": `${url}#breadcrumbs`,
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Renewables", item: `${SITE_URL}/` },
+          { "@type": "ListItem", position: 2, name: "Expiry date calculator", item: url },
+        ],
+      },
+    ],
   };
 }
 
