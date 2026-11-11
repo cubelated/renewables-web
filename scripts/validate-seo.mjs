@@ -38,6 +38,27 @@ const pages = [
     canonical: "https://renewables.cubelated.com/tools/expiry-calculator",
     robots: "index, follow",
     calculator: true,
+    language: "en", ogLocale: "en_US",
+    title: "Free Expiry Date Calculator & Calendar Converter | Renewables",
+    content: ["How expiry countdowns work", "How reminder offsets work", "How calendar conversion works", "How date differences are counted", "Choosing a date format", "Which calendars can I convert?", "Why time zones matter", "Frequently asked questions", "185 days", "民國115年11月11日"],
+  },
+  {
+    file: "zh-tw/tools/expiry-calculator/index.html",
+    heading: "到期日計算器",
+    canonical: "https://renewables.cubelated.com/zh-tw/tools/expiry-calculator",
+    robots: "index, follow", calculator: true,
+    language: "zh-TW", ogLocale: "zh_TW",
+    title: "免費到期日計算器與曆法換算 | Renewables",
+    content: ["到期倒數如何計算？", "提醒日期如何計算？", "曆法換算如何運作？", "日期差距如何計算？", "如何選擇日期格式？", "支援哪些曆法換算？", "為什麼時區很重要？", "常見問題", "185天", "民國115年11月11日"],
+  },
+  {
+    file: "id/tools/expiry-calculator/index.html",
+    heading: "Kalkulator kedaluwarsa",
+    canonical: "https://renewables.cubelated.com/id/tools/expiry-calculator",
+    robots: "index, follow", calculator: true,
+    language: "id-ID", ogLocale: "id_ID",
+    title: "Kalkulator Kedaluwarsa & Konversi Kalender Gratis | Renewables",
+    content: ["Cara kerja hitung mundur kedaluwarsa", "Cara menghitung tanggal pengingat", "Cara kerja konversi kalender", "Cara menghitung selisih tanggal", "Memilih format tanggal", "Kalender apa yang dapat dikonversi?", "Mengapa zona waktu penting", "Pertanyaan umum", "185 hari", "hitung masa berlaku dokumen"],
   },
   {
     file: "404.html",
@@ -55,6 +76,8 @@ for (const page of pages) {
   const pageTitles = [...head.matchAll(/<title\b[^>]*>([\s\S]*?)<\/title>/gi)];
   assert(pageTitles.length === 1 && pageTitles[0][1].trim(), `${page.file} needs exactly one nonempty title`);
   const title = pageTitles[0][1];
+  assert(html.includes(`<html lang="${page.language ?? "en"}">`), `${page.file} has an incorrect document language`);
+  assert(metaContent(head, "property", "og:locale") === (page.ogLocale ?? "en_US"), `${page.file} has an incorrect social locale`);
   const description = metaContent(head, "name", "description");
   assert(!titles.has(title), `${page.file} duplicates another page title`);
   assert(!descriptions.has(description), `${page.file} duplicates another page description`);
@@ -159,18 +182,31 @@ for (const page of pages) {
     const breadcrumbs = graph.find((entry) => entry["@type"] === "BreadcrumbList");
     assert(webPage?.url === page.canonical && app?.url === page.canonical, "Calculator schema URLs must match its canonical");
     assert(webPage?.mainEntity?.["@id"] === app?.["@id"] && app?.mainEntityOfPage?.["@id"] === webPage?.["@id"], "Calculator schema must connect the page and application");
-    assert(webPage?.inLanguage === "en" && html.includes('<html lang="en">'), "Indexed calculator language must describe its prerendered English content");
+    assert(webPage?.inLanguage === page.language, "Calculator schema language must match the prerendered language");
     assert(["en", "zh-TW", "id-ID"].every((language) => app?.inLanguage?.includes(language)), "Calculator app schema must describe supported languages");
     assert(website?.["@id"] === webPage?.isPartOf?.["@id"], "Calculator schema must identify its website");
     assert(breadcrumbs?.["@id"] === webPage?.breadcrumb?.["@id"], "Calculator must connect its breadcrumb schema");
     assert(breadcrumbs?.itemListElement?.at(-1)?.item === page.canonical, "Breadcrumb destination must match the calculator canonical");
     assert(new Set(graph.map((entry) => entry["@id"])).size === graph.length, "Calculator schema IDs must be unique");
-    assert(title === "Free Expiry Date Calculator &amp; Calendar Converter | Renewables", "Calculator title is missing");
-    assert(!head.includes("hreflang="), "Do not advertise alternate language URLs without prerendered localized pages");
+    assert(title === escapeHtml(page.title), "Localized calculator title is missing");
+    assert(escapeHtml(webPage.name) === title && escapeHtml(webPage.description) === description, "Localized page schema and metadata must agree");
+    assert(escapeHtml(app.description) === description && escapeHtml(`${app.name} | Renewables`) === title, "Application schema must be localized");
+    const alternates = [...head.matchAll(/<link\b[^>]*rel="alternate"[^>]*>/g)];
+    const expectedAlternates = [...pages.filter((entry) => entry.calculator).map((entry) => [entry.language, entry.canonical]), ["x-default", "https://renewables.cubelated.com/tools/expiry-calculator"]];
+    assert(alternates.length === expectedAlternates.length, "Every calculator needs all language alternates and x-default");
+    for (const [language, url] of expectedAlternates) {
+      assert(alternates.filter(([tag]) => tag.includes(`hreflang="${language}"`) && tag.includes(`href="${url}"`)).length === 1, `Missing reciprocal alternate for ${language} on ${page.file}`);
+    }
+    const alternateLocales = [...head.matchAll(/<meta\b[^>]*property="og:locale:alternate"[^>]*>/g)].map(([tag]) => tag.match(/content="([^"]*)"/)?.[1]);
+    assert(alternateLocales.length === 2 && pages.filter((entry) => entry.calculator && entry.language !== page.language).every((entry) => alternateLocales.includes(entry.ogLocale)), "Calculator social locale alternatives must match translated pages");
+    for (const entry of pages.filter((entry) => entry.calculator)) {
+      const url = new URL(entry.canonical);
+      assert(new RegExp(`<a\\b[^>]*href="${url.pathname}"[^>]*`, "i").test(html), `Calculator must contain a crawlable link to ${entry.language}`);
+    }
     assert(html.includes('class="calc-workspace" data-nosnippet=""'), "Calculator controls should not supply search snippet text");
     assert(!/<details[^>]*class="calc-help"[^>]*\bopen(?:[=\s>])/.test(html), "SEO explanations must preserve the minimal collapsed help layout");
     assert(!html.includes('href="/app-phone.webp"'), "Calculator must not preload the unrelated homepage hero");
-    for (const text of ["How expiry countdowns work", "How reminder offsets work", "How calendar conversion works", "How date differences are counted", "Choosing a date format", "Which calendars can I convert?", "Why time zones matter", "Frequently asked questions", "185 days", "民國115年11月11日"]) {
+    for (const text of page.content) {
       assert(html.includes(text), `Calculator explanation must be prerendered: ${text}`);
     }
     const headings = [...html.matchAll(/<h([1-6])\b[^>]*>/g)].map((match) => Number(match[1]));
@@ -212,7 +248,7 @@ assert(
   robots.includes("Sitemap: https://renewables.cubelated.com/sitemap.xml"),
   "robots.txt must advertise the sitemap",
 );
-assert(!/^Disallow:\s*\/\s*$/im.test(robots) && !/^Disallow:\s*\/tools(?:\/|\s|$)/im.test(robots), "robots.txt must allow public calculators");
+assert(!/^Disallow:\s*\/\s*$/im.test(robots) && !/^Disallow:\s*\/(?:tools|zh-tw|id)(?:\/|\s|$)/im.test(robots), "robots.txt must allow public calculators");
 
 console.log(`Validated SEO output for ${pages.length} pages.`);
 

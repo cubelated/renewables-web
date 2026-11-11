@@ -1,12 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { Check, Languages } from "lucide-react";
 import type { CalculatorLanguage } from "../../content/expiry-calculator";
+import { CALCULATOR_LANGUAGES, CALCULATOR_LOCALES } from "../../content/calculator-locales";
 
-const languages: { value: CalculatorLanguage; label: string }[] = [
-  { value: "en", label: "English" },
-  { value: "zh-TW", label: "繁體中文" },
-  { value: "id-ID", label: "Bahasa Indonesia" },
-];
+const languages = CALCULATOR_LANGUAGES.map((value) => ({ value, ...CALCULATOR_LOCALES[value] }));
 
 export default function LanguageMenu({ label, value, onChange }: {
   label: string; value: CalculatorLanguage; onChange: (value: CalculatorLanguage) => void;
@@ -17,7 +14,7 @@ export default function LanguageMenu({ label, value, onChange }: {
   const initialFocus = useRef(0);
   useEffect(() => {
     if (!open) return;
-    container.current?.querySelectorAll<HTMLButtonElement>("[role=menuitemradio]")[initialFocus.current]?.focus();
+    container.current?.querySelectorAll<HTMLAnchorElement>("[role=menuitemradio]")[initialFocus.current]?.focus();
     function outside(event: PointerEvent) {
       if (!container.current?.contains(event.target as Node)) setOpen(false);
     }
@@ -38,23 +35,27 @@ export default function LanguageMenu({ label, value, onChange }: {
           event.preventDefault(); show(event.key === "ArrowDown" ? 0 : languages.length - 1);
         }
       }}><Languages size={20} aria-hidden="true" /></button>
-    {open && <div id="calc-language-options" className="calc-language-options" role="menu" aria-label={label}
+    <div id="calc-language-options" className="calc-language-options" role="menu" aria-label={label} hidden={!open}
       onKeyDown={(event) => {
-        const options = [...event.currentTarget.querySelectorAll<HTMLButtonElement>("[role=menuitemradio]")];
-        const index = options.indexOf(document.activeElement as HTMLButtonElement);
+        const options = [...event.currentTarget.querySelectorAll<HTMLAnchorElement>("[role=menuitemradio]")];
+        const index = options.indexOf(document.activeElement as HTMLAnchorElement);
         if (event.key === "Escape") { event.preventDefault(); close(); }
         else if (event.key === "Tab") close();
+        else if (event.key === " ") { event.preventDefault(); options[index]?.click(); }
         else if (["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) {
           event.preventDefault();
           const next = event.key === "Home" ? 0 : event.key === "End" ? options.length - 1 : (index + (event.key === "ArrowDown" ? 1 : -1) + options.length) % options.length;
           options[next]?.focus();
         }
       }}>
-      {languages.map((language) => <button key={language.value} type="button" role="menuitemradio"
+      {languages.map((language) => <a key={language.value} href={language.path} hrefLang={language.value} role="menuitemradio"
         aria-checked={language.value === value} data-language={language.value} lang={language.value}
-        onClick={() => { onChange(language.value); close(); }}>
+        onClick={(event) => {
+          if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+          event.preventDefault(); onChange(language.value); close();
+        }}>
         <span>{language.label}</span>{language.value === value && <Check size={16} aria-hidden="true" />}
-      </button>)}
-    </div>}
+      </a>)}
+    </div>
   </div>;
 }

@@ -7,6 +7,11 @@ import path from "node:path";
 
 const base = process.env.CALCULATOR_BASE_URL ?? "http://127.0.0.1:8789";
 const route = `${base}/tools/expiry-calculator`;
+const languagePages = [
+  { language: "en", path: "/tools/expiry-calculator", heading: "Expiry date calculator", guide: "How expiry countdowns work" },
+  { language: "zh-TW", path: "/zh-tw/tools/expiry-calculator", heading: "到期日計算器", guide: "到期倒數如何計算？" },
+  { language: "id-ID", path: "/id/tools/expiry-calculator", heading: "Kalkulator kedaluwarsa", guide: "Cara kerja hitung mundur kedaluwarsa" },
+];
 const executable = process.env.BROWSER_EXECUTABLE ?? [
   "C:/Program Files/Google/Chrome/Application/chrome.exe",
   "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe",
@@ -24,6 +29,15 @@ assert.equal(missing.status, 404);
 const trailing = await fetch(`${route}/`, { redirect: "manual" });
 assert([301, 307, 308].includes(trailing.status));
 assert.equal(new URL(trailing.headers.get("location"), base).pathname, "/tools/expiry-calculator");
+for (const page of languagePages) {
+  const response = await fetch(`${base}${page.path}`);
+  assert.equal(response.status, 200);
+  const source = await response.text();
+  assert(source.includes(`<html lang="${page.language}">`) && source.includes(page.heading) && source.includes(page.guide));
+  assert(source.includes(`rel="canonical" href="https://renewables.cubelated.com${page.path}"`));
+  assert.equal((await fetch(`${base}${page.path}`, { method: "HEAD" })).status, 200);
+}
+assert.equal((await fetch(`${base}/fr/tools/expiry-calculator`)).status, 404);
 
 const output = path.resolve(".qa");
 await mkdir(output, { recursive: true });
@@ -71,6 +85,8 @@ try {
     if (selector === "#calc-language") {
       await evaluate(`document.querySelector('#calc-language').click()`); await pause(70);
       await evaluate(`document.querySelector('[data-language="${value}"]').click()`); await pause(70);
+      await waitFor(`document.documentElement.lang===${JSON.stringify(value)}`);
+      assert.equal(await evaluate("location.pathname"), languagePages.find((page) => page.language === value).path);
       return;
     }
     if (selector === "#calc-zone") {
@@ -311,10 +327,45 @@ try {
   assert.equal(await evaluate("sessionStorage.length"), 0);
   await navigate();
   assert.equal(await evaluate(`document.querySelector('#date-expiry').value`), "");
+
+  // Language URLs update metadata without submitting or discarding calculator state.
+  await change("#calc-zone", "Asia/Taipei"); await change("#date-expiry", "2027-05-15");
+  await change("#calc-calendar", "roc");
+  const savedDate = await evaluate(`document.querySelector('#date-expiry').value`);
+  const languageRequestStart = events.filter((event) => event.method === "Network.requestWillBeSent").length;
+  await change("#calc-language", "zh-TW");
+  assert.equal(await evaluate(`document.querySelector('#date-expiry').value`), savedDate);
+  assert.equal(await evaluate(`document.querySelector('#calc-calendar').value`), "roc");
+  assert.equal(await evaluate(`document.querySelector('#calc-zone').value`), "Asia/Taipei");
+  assert.equal(await evaluate(`document.querySelector('.calc-result-number').textContent`), "185");
+  assert.equal(await evaluate("history.state"), null);
+  const languageRequests = events.filter((event) => event.method === "Network.requestWillBeSent").slice(languageRequestStart);
+  const browserAssets = new Set(["/favicon.ico", "/favicon.svg", "/favicon-96x96.png", "/apple-touch-icon.png", "/site.webmanifest", "/web-app-manifest-192x192.png", "/web-app-manifest-512x512.png"].map((path) => `${base}${path}`));
+  assert(languageRequests.every(({ params }) => params.type !== "Document" && params.request.method === "GET" && browserAssets.has(params.request.url)), JSON.stringify(languageRequests.map(({ params }) => ({ type: params.type, url: params.request.url }))));
+  assert.match(await evaluate("document.title"), /免費到期日/);
+  await evaluate("history.back()"); await waitFor(`document.documentElement.lang==='en'`);
+  assert.equal(await evaluate("location.pathname"), languagePages[0].path);
+  assert.equal(await evaluate(`document.querySelector('#date-expiry').value`), savedDate);
+  await evaluate("history.forward()"); await waitFor(`document.documentElement.lang==='zh-TW'`);
+  assert.equal(await evaluate(`document.querySelector('#date-expiry').value`), savedDate);
+  await navigate();
   // A focus event refreshes today across the selected zone's midnight.
   await change("#calc-zone", "Asia/Taipei"); await change("#date-expiry", "2026-11-11");
   await evaluate(`window.__testNow = Date.parse('2026-11-11T16:01:00Z');window.dispatchEvent(new Event('focus'))`);
   await waitFor(`document.querySelector('.calc-result-content').textContent.includes('Days overdue')`);
+
+  for (const page of languagePages) {
+    await call("Page.navigate", { url: `${base}${page.path}` });
+    await waitFor(`document.querySelector('#calc-zone')?.value.includes('America/Los_Angeles')`);
+    assert.equal(await evaluate("document.documentElement.lang"), page.language);
+    assert.equal(await evaluate(`document.querySelector('h1').textContent`), page.heading);
+    assert.equal(await evaluate(`document.querySelector('#calc-calendar').value`), "gregorian");
+    assert.equal(await evaluate(`document.querySelector('#date-expiry').value`), "");
+    assert.equal(await evaluate(`new URL(document.querySelector('link[rel=canonical]').href).pathname`), page.path);
+    assert.equal(await evaluate(`document.querySelectorAll('link[rel=alternate][hreflang]').length`), 4);
+    const graph = await evaluate(`JSON.parse(document.querySelector('script[type="application/ld+json"]').textContent)['@graph']`);
+    assert.equal(graph.find((entry) => entry['@type'] === 'WebPage').inLanguage, page.language);
+  }
 
   // The tool must also be discoverable from the homepage at navigation breakpoints.
   for (const width of [320, 375, 768, 1024, 1440]) {
@@ -332,8 +383,13 @@ try {
   const hydrationErrors = events.filter((event) => event.method === "Runtime.consoleAPICalled" && JSON.stringify(event.params).match(/hydration|hydrated|Minified React error #(?:418|423|425)/i));
   assert.deepEqual(exceptions, []); assert.deepEqual(hydrationErrors, []);
   await call("Emulation.setScriptExecutionDisabled", { value: true });
-  await call("Page.navigate", { url: route }); await pause(300);
-  assert(await evaluate(`document.querySelector('h1').textContent==='Expiry date calculator'&&document.body.textContent.includes('How expiry countdowns work')`));
+  for (const page of languagePages) {
+    await call("Page.navigate", { url: `${base}${page.path}` }); await pause(300);
+    assert.equal(await evaluate("document.documentElement.lang"), page.language);
+    assert.equal(await evaluate(`document.querySelector('h1').textContent`), page.heading);
+    assert(await evaluate(`document.body.textContent.includes(${JSON.stringify(page.guide)})`));
+    assert.equal(await evaluate(`document.querySelectorAll('noscript a[hreflang]').length`), 3);
+  }
   const report = { http: "GET/HEAD 200; unknown route 404; trailing slash redirects", reports, checks: ["all modes and languages", "date validation", "copy success and denial", "reset", "ROC formats and boundaries", "Buddhist and Japanese inputs and calendar-preserving switches", "month/year clamping", "timezones and midnight rollover", "flat searchable timezone combobox with keyboard selection", "icon-only language menu with arrow, Escape and Tab support", "keyboard and visible focus", "reduced motion", "no calculation requests, storage, date URLs, or CTA prefills", "reload clears inputs", "hydration across different server/client zones", "content without JavaScript"], exceptions, hydrationErrors };
   await writeFile(path.join(output, "expiry-browser-results.json"), JSON.stringify(report, null, 2));
   console.log(JSON.stringify({ http: report.http, widths: reports.map(({ width }) => width), layouts: reports.reduce((sum, item) => sum + item.layouts.length, 0), checks: report.checks, exceptions, hydrationErrors }, null, 2));

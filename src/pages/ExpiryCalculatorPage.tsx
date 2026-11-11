@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { ArrowLeftRight, ArrowRight, Bell, CalendarCheck2, CalendarDays, CalendarPlus2, CalendarRange, Check, ChevronDown, CircleAlert, CircleHelp, Globe2, History, Hourglass, RotateCcw, Settings2, ShieldCheck, Smartphone, Copy } from "lucide-react";
 import { calculatorCopy, interpolate } from "../content/expiry-calculator";
 import type { CalculatorLanguage } from "../content/expiry-calculator";
+import { CALCULATOR_LANGUAGES, CALCULATOR_LOCALES } from "../content/calculator-locales";
 import { product } from "../content/product";
 import LanguageMenu from "../components/calculator/LanguageMenu";
 import TimeZoneSelect from "../components/calculator/TimeZoneSelect";
@@ -20,8 +21,7 @@ const MODE_ICONS = { countdown: Hourglass, difference: CalendarRange, arithmetic
 const locales = { en: "en-US", "zh-TW": "zh-TW", "id-ID": "id-ID" };
 const EXAMPLE_DATE: CalendarDate = { year: 2026, month: 11, day: 11 };
 
-export default function ExpiryCalculatorPage() {
-  const [language, setLanguage] = useState<CalculatorLanguage>("en");
+export default function ExpiryCalculatorPage({ language = "en" }: { language?: CalculatorLanguage }) {
   const [mode, setMode] = useState<Mode>("countdown");
   const [calendar, setCalendar] = useState<Calendar>("gregorian");
   const [targetCalendar, setTargetCalendar] = useState<Calendar>("gregorian");
@@ -169,7 +169,14 @@ export default function ExpiryCalculatorPage() {
     <header className="calc-header calc-container">
       <a href="/" className="calc-brand" aria-label={t.home}><img src="/logo.webp" width="44" height="44" alt="" /><span>Renewables</span></a>
       <nav className="calc-header-actions" aria-label={t.navigation}>
-        <LanguageMenu label={t.language} value={language} onChange={(value) => { setLanguage(value); setCopyStatus(null); }} />
+        <LanguageMenu label={t.language} value={language} onChange={(value) => {
+          const path = CALCULATOR_LOCALES[value].path;
+          if (window.location.pathname !== path) {
+            window.history.pushState(null, "", path);
+            window.dispatchEvent(new PopStateEvent("popstate"));
+          }
+          setCopyStatus(null);
+        }} />
       </nav>
     </header>
     <main id="main-content" className="calc-container" tabIndex={-1}>
@@ -256,7 +263,7 @@ export default function ExpiryCalculatorPage() {
           <section className="calc-faq" aria-labelledby="faq-heading"><h2 id="faq-heading">{t.faqTitle}</h2>{t.faqs.map(([question, answer]) => <details key={question}><summary>{question}<span aria-hidden="true">+</span></summary><p>{answer}</p></details>)}</section>
         </div>
       </details>
-      <noscript><p>This free calculator needs JavaScript for local calculations. The explanations and examples above are available without JavaScript.</p></noscript>
+      <noscript><p>{t.noScript}</p><nav aria-label={t.language}>{CALCULATOR_LANGUAGES.map((value) => <a key={value} href={CALCULATOR_LOCALES[value].path} hrefLang={value} lang={value}>{CALCULATOR_LOCALES[value].label}</a>)}</nav></noscript>
     </main>
     <footer className="calc-footer calc-container"><a href="/">Renewables</a><nav aria-label="Renewables"><a href="/privacy">{language === "zh-TW" ? "隱私權政策" : language === "id-ID" ? "Kebijakan Privasi" : "Privacy Policy"}</a><a href="/support">{language === "zh-TW" ? "支援" : language === "id-ID" ? "Bantuan" : "Support"}</a></nav></footer>
   </div>;

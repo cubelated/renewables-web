@@ -6,7 +6,7 @@ import App from "./App.tsx";
 const rootElement = document.getElementById("root")!;
 const app = (
   <StrictMode>
-    <App />
+    <App path={window.location.pathname} />
   </StrictMode>
 );
 

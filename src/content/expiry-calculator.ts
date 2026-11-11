@@ -1,5 +1,6 @@
 export type CalculatorLanguage = "en" | "zh-TW" | "id-ID";
 const en = {
+  noScript: "Enable JavaScript to calculate dates locally. The explanations and examples are available without JavaScript.",
   free: "Free", quickNote: "Private · No account", help: "How it works",
   fromCalendar: "From", toCalendar: "To", swapCalendars: "Swap calendars",
   inputFormat: "Input date format", resultFormat: "Result date format", native: "Calendar default",
@@ -74,6 +75,7 @@ const en = {
 };
 type Copy = { [K in keyof typeof en]: K extends "errors" ? Record<keyof typeof en.errors, string> : K extends "guides" | "faqs" ? string[][] : string };
 const zh: Copy = {
+  noScript: "請啟用 JavaScript 以在瀏覽器本機計算日期。無須啟用 JavaScript 即可閱讀說明與範例。",
   free: "免費", quickNote: "本機計算 · 免登入", help: "使用說明",
   fromCalendar: "來源", toCalendar: "目標", swapCalendars: "交換曆法",
   inputFormat: "輸入日期格式", resultFormat: "結果日期格式", native: "曆法預設",
@@ -113,6 +115,7 @@ const zh: Copy = {
   ], errors: { buddhistRange: "請使用佛曆2484至10542年（西元1941至9999年）的現代泰國日期，不支援更早的歷史曆法。", japaneseRange: "請使用1873年起且符合年號期間的日期：明治（M）、大正（T）、昭和（S）、平成（H）或令和（R）。不支援年號0年。", required: "請輸入所需日期以查看結果。", format: "請使用所選的日期格式。", invalidDate: "此日期不存在，請確認月份、日期及閏年。", rocRange: "請使用民國1至8088年（西元1912至9999年），不支援民國0年及更早年份。", range: "請使用0001-01-01至9999-12-31的日期，計算結果也須在此範圍內。", amount: "請輸入0至1,000,000的整數。", zone: "請選擇有效的IANA時區。" },
 };
 const id: Copy = {
+  noScript: "Aktifkan JavaScript untuk menghitung tanggal secara lokal. Penjelasan dan contoh tersedia tanpa JavaScript.",
   free: "Gratis", quickNote: "Privat · Tanpa akun", help: "Cara menggunakan",
   fromCalendar: "Dari", toCalendar: "Ke", swapCalendars: "Tukar kalender",
   inputFormat: "Format tanggal input", resultFormat: "Format tanggal hasil", native: "Default kalender",

@@ -1,6 +1,14 @@
 # Free date calculator and calendar converter
 
-Public SEO route: `https://renewables.cubelated.com/tools/expiry-calculator`.
+Public SEO routes:
+
+| Language | Path |
+| --- | --- |
+| English | `/tools/expiry-calculator` |
+| Traditional Chinese | `/zh-tw/tools/expiry-calculator` |
+| Indonesian | `/id/tools/expiry-calculator` |
+
+All paths use `https://renewables.cubelated.com`.
 The marketing site calculates dates locally, without an account or backend. It
 does not schedule notifications or determine official renewal deadlines.
 
@@ -12,21 +20,23 @@ Created:
 - `src/lib/date-calculator.ts`, `src/lib/calculator-clock.ts`, and
   `src/lib/calculator-clipboard.ts`
 - `src/content/expiry-calculator.ts`
+- `src/content/calculator-locales.ts` and `src/lib/seo-head.ts`
 - `src/components/calculator/LanguageMenu.tsx` and
   `src/components/calculator/TimeZoneSelect.tsx`
 - `scripts/date-calculator.test.mjs`, `scripts/expiry-page.test.mjs`, and
   `scripts/calculator-browser-check.mjs`
+- `scripts/calculator-locales.test.mjs`
 - `docs/expiry-calculator.md`
 
 Updated:
 
-- `src/react-app/App.tsx`, `src/seo.ts`, and `src/pages/LandingPage.tsx`
+- `src/react-app/App.tsx`, `src/react-app/main.tsx`,
+  `src/react-app/entry-server.tsx`, `src/seo.ts`, and `src/pages/LandingPage.tsx`
 - `scripts/prerender.mjs` and `scripts/validate-seo.mjs`
 - `public/sitemap.xml` and `package.json`
 
-The existing `entry-server.tsx` already exports the route list, so adding the
-route to `INDEXED_PATHS` needs no duplicate route list there. Existing
-`robots.txt` and `wrangler.json` already allow and serve the new static route.
+The server entry exports the route list and shared metadata renderer. Existing
+`robots.txt` and `wrangler.json` already allow and serve all three static routes.
 
 ## Modes
 
@@ -176,7 +186,7 @@ today from an instant. No offsets are manually added to timestamps.
 Changing zones affects today and Today shortcuts, preserving entered calendar
 dates. Human-readable zone names are localized with `Intl`. Today refreshes every
 30 seconds and on focus/visibility changes. The server and initial hydration use
-the same null clock snapshot, empty inputs, English text, and deterministic zone
+the same null clock snapshot, empty inputs, URL-selected language, and deterministic zone
 options. Current time, device zone, and full browser-supported zone options only
 appear after hydration. No build-time countdown is displayed as a live result.
 
@@ -192,6 +202,14 @@ language names, with the current selection checked. The menu supports arrow
 keys, Home/End, Enter/Space, Escape, Tab, and outside-click dismissal. It is
 separate from the date settings card. The time zone uses an editable ARIA
 combobox and flat listbox with active-option announcements and keyboard access.
+
+Language options are genuine links to the three published paths. Normal clicks
+use the existing path router and History API to preserve the current calculator
+inputs, calendar, formats, mode, and time zone. Back/forward updates the language
+and metadata without resetting those inputs. No dates enter the URL or history
+state. Refreshing clears inputs and keeps the URL's language. Modified clicks
+and opening links in a new tab use normal browser navigation. Without JavaScript,
+localized explanations and a simple language-link fallback remain available.
 
 The primary date inputs appear directly after the short title and mode
 buttons. Additional calendar, format, and time zone controls live in a native
@@ -241,17 +259,33 @@ remain native expandable details.
 ## SEO and performance
 
 `App.tsx` preserves the existing path router. `INDEXED_PATHS` in `src/seo.ts`
-automatically makes the existing prerender script emit
-`dist/tools/expiry-calculator/index.html`. The output includes one H1, static
+automatically makes the existing prerender script emit three complete translated
+HTML files, including `dist/tools/expiry-calculator/index.html`,
+`dist/zh-tw/tools/expiry-calculator/index.html`, and
+`dist/id/tools/expiry-calculator/index.html`. Each output includes one H1, static
 explanations/examples/FAQs, unique title/description/canonical, index/follow,
 Open Graph/Twitter metadata, and linked WebSite/WebPage/WebApplication/
 BreadcrumbList JSON-LD. The title is “Free Expiry Date Calculator & Calendar
-Converter | Renewables” and the H1 is “Expiry date calculator.” The page schema
-describes the prerendered English content; the application schema lists all three
+Converter | Renewables” in English, with translated titles and descriptions for
+Chinese and Indonesian. The page schema describes its own prerendered language;
+the application schema lists all three
 available interface languages. It does not copy the homepage FAQ schema, add
 invented reviews, or claim rich-result eligibility. Both the homepage navigation
 and its Resources footer link to the route; the public sitemap
 includes it and the existing robots.txt advertises the sitemap.
+
+Every language has a self-referencing canonical and reciprocal HTML `hreflang`
+links for `en`, `zh-TW`, `id-ID`, plus `x-default` pointing to English. All three
+URLs are in the sitemap. There are no browser-language or location redirects.
+Open Graph uses `en_US`, `zh_TW`, or `id_ID` and names the other two locales.
+The translated pages contain the full tool and help content, rather than only
+translated metadata or navigation. The landing page and legal pages remain English.
+
+`src/content/calculator-locales.ts` owns language paths and localized search
+metadata. `src/lib/seo-head.ts` renders metadata for both build-time HTML and
+client language/history navigation, preventing titles, canonicals, alternates,
+social metadata and structured data from drifting. Only SEO-owned head elements
+are replaced, preserving site verification, styles, favicons and other head tags.
 
 Seven guides and seven FAQs are included in the initial HTML inside the existing
 collapsed help disclosure, including date-difference counting, numeric date
@@ -265,25 +299,26 @@ Cloudflare's existing static-asset routing serves the real generated HTML with a
 Wrangler configuration changes are required. `scripts/validate-seo.mjs` validates
 the new route, heading hierarchy, substantive prerendered content, navigation and
 footer links, CTA destinations, connected schema IDs, and exact sitemap coverage.
-Across all six generated pages it rejects duplicate or missing titles,
+Across all eight generated pages it rejects duplicate or missing titles,
 descriptions and canonicals, mismatched social metadata, nonexistent social images,
-and incorrect PNG dimensions. Open Graph and Twitter include image alt text.
+and incorrect PNG dimensions. It also verifies translated content, language and
+schema agreement, self-canonicals, and reciprocal alternate links. Open Graph and
+Twitter include localized image alt text on calculator pages.
 
 Search references: [Google's JavaScript SEO guidance](https://developers.google.com/search/docs/crawling-indexing/javascript/javascript-seo-basics),
 [title links](https://developers.google.com/search/docs/appearance/title-link),
 [snippet controls](https://developers.google.com/search/docs/appearance/snippet),
 and [structured-data policies](https://developers.google.com/search/docs/appearance/structured-data/sd-policies).
+Multilingual references: [localized pages and hreflang](https://developers.google.com/search/docs/specialty/international/localized-versions),
+[multilingual site guidance](https://developers.google.com/search/docs/specialty/international/managing-multi-regional-sites).
 
 There are no additional runtime or test packages, external fonts, images, or
 date-library downloads. The page uses existing Lucide icons and a small brand
 asset. Calculations are synchronous and bounded. The current application uses a
 shared client bundle; route-level splitting is a possible future optimization
-if more tools are added. Localized variants are client selections on one
-canonical route, not separate indexable language pages or hreflang URLs.
-Indexable Chinese and Indonesian versions would require real prerendered language
-URLs with reciprocal alternate links; the current client language selection
-does not provide separate search landing pages. No nonexistent alternates are
-advertised.
+if more tools are added. To add a language, translate the complete dictionary,
+add its locale configuration, add its metadata entry to `src/seo.ts`, extend the
+public sitemap and SEO/browser checks, then build and verify direct hydration.
 
 ## Validation and local preview
 
@@ -339,7 +374,7 @@ localized formatting; clipboard failure; and stable server rendering.
 
 ### Verification environment note (November 11, 2026)
 
-`npm ci`, lint, all 52 Node tests, the production build, six-page SEO validation,
+`npm ci`, lint, all 55 Node tests, the production build, eight-page SEO validation,
 and `npm run check` (including Wrangler's deployment dry run) passed. Lint has two
 pre-existing unused-disable warnings in generated `worker-configuration.d.ts`.
 Chromium passed 48 mode/language/viewport combinations and the interaction,

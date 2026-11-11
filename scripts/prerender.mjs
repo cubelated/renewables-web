@@ -5,6 +5,7 @@ import {
   getPageSeo,
   INDEXED_PATHS,
   render,
+  renderSeoHead,
   ocrVideo,
 } from "../.ssr/entry-server.js";
 
@@ -56,48 +57,7 @@ function injectPage(html, pathname) {
   // Only the homepage uses the phone hero; other routes must not download it.
   const pageTemplate = pathname === "/" ? withoutSeo : withoutSeo.replace(/\s*<link\b[^>]*rel="preload"[^>]*href="\/app-phone\.webp"[^>]*>/gi, "");
   return pageTemplate
-    .replace("</head>", `${renderHead(seo)}\n</head>`)
+    .replace('<html lang="en">', `<html lang="${seo.language}">`)
+    .replace("</head>", `${renderSeoHead(seo)}\n</head>`)
     .replace('<div id="root"></div>', `<div id="root">${renderedApp}</div>`);
-}
-
-function renderHead(seo) {
-  const title = escapeHtml(seo.title);
-  const description = escapeHtml(seo.description);
-  const canonical = escapeHtml(seo.canonical);
-  const image = "https://renewables.cubelated.com/social-preview.png";
-  const structuredData = seo.structuredData
-    ? `\n\t<script type="application/ld+json" data-seo="structured-data">${JSON.stringify(
-        seo.structuredData,
-      ).replaceAll("<", "\\u003c")}</script>`
-    : "";
-
-  return `
-	<title data-seo="title">${title}</title>
-	<meta name="description" content="${description}" data-seo="description" />
-	<meta name="robots" content="${escapeHtml(seo.robots)}" data-seo="robots" />
-	<link rel="canonical" href="${canonical}" data-seo="canonical" />
-	<meta property="og:type" content="website" data-seo="og" />
-	<meta property="og:site_name" content="Renewables" data-seo="og" />
-	<meta property="og:locale" content="en_US" data-seo="og" />
-	<meta property="og:title" content="${title}" data-seo="og" />
-	<meta property="og:description" content="${description}" data-seo="og" />
-	<meta property="og:url" content="${canonical}" data-seo="og" />
-	<meta property="og:image" content="${image}" data-seo="og" />
-	<meta property="og:image:type" content="image/png" data-seo="og" />
-	<meta property="og:image:width" content="1200" data-seo="og" />
-	<meta property="og:image:height" content="630" data-seo="og" />
-	<meta property="og:image:alt" content="Renewables document expiry tracker dashboard" data-seo="og" />
-	<meta name="twitter:card" content="summary_large_image" data-seo="twitter" />
-	<meta name="twitter:title" content="${title}" data-seo="twitter" />
-	<meta name="twitter:description" content="${description}" data-seo="twitter" />
-	<meta name="twitter:image" content="${image}" data-seo="twitter" />
-	<meta name="twitter:image:alt" content="Renewables document expiry tracker dashboard" data-seo="twitter" />${structuredData}`;
-}
-
-function escapeHtml(value) {
-  return value
-    .replaceAll("&", "&amp;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;");
 }
