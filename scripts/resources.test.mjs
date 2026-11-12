@@ -6,12 +6,13 @@ import { createElement } from "react";
 import { renderToString } from "react-dom/server";
 import { readFile } from "node:fs/promises";
 
-let server, catalog, seo, App, copy, renderSeoHead;
+let server, catalog, seo, App, copy, discovery, renderSeoHead;
 before(async () => {
   server = await createServer({ server: { middlewareMode: true, hmr: { server: createHttpServer() } }, appType: "custom", optimizeDeps: { noDiscovery: true, entries: [] } });
   catalog = await server.ssrLoadModule("/src/content/resources/guides.ts");
   seo = await server.ssrLoadModule("/src/seo.ts");
   copy = (await server.ssrLoadModule("/src/content/resources/locales.ts")).resourceCopy;
+  discovery = (await server.ssrLoadModule("/src/content/resources/discovery.ts")).resourceDiscoveryCopy;
   renderSeoHead = (await server.ssrLoadModule("/src/lib/seo-head.ts")).renderSeoHead;
   App = (await server.ssrLoadModule("/src/react-app/App.tsx")).default;
 });
@@ -139,7 +140,7 @@ test("resource search, social and schema metadata use the published page's actua
     const { language, guide } = catalog.resolveResourcePath(path);
     const content = guide?.translations[language];
     const metadata = seo.getPageSeo(path);
-    assert.equal(metadata.title, `${content?.title ?? copy[language].name} | Renewables`);
+    assert.equal(metadata.title, `${content?.title ?? discovery[language].metaTitle} | Renewables`);
     assert.equal(metadata.description, content?.summary ?? copy[language].metaDescription);
     assert.equal(metadata.language, language);
     assert.equal(metadata.ogLocale, ogLocales[language]);
@@ -157,6 +158,50 @@ test("resource search, social and schema metadata use the published page's actua
     const filtered = seo.getPageSeo(`${path}?language=other&nationality=ID`);
     assert.equal(filtered.canonical, metadata.canonical);
     assert.equal(filtered.title, metadata.title);
+  }
+});
+
+test("directory discovery schema lists the visible published guides in their real content languages", () => {
+  for (const language of catalog.RESOURCE_LANGUAGES) {
+    const path = catalog.directoryPath(language);
+    const metadata = seo.getPageSeo(path);
+    const graph = metadata.structuredData["@graph"];
+    const list = graph.find((entry) => entry["@type"] === "ItemList");
+    assert.equal(list.numberOfItems, catalog.publishedGuides.length);
+    const html = render(path);
+    const renderedIds = [...html.matchAll(/data-guide="([^"]+)"/g)].map(([, id]) => id);
+    assert.deepEqual(list.itemListElement.map((entry) => {
+      const resolved = catalog.resolveResourcePath(new URL(entry.item.url).pathname);
+      assert(resolved?.guide);
+      assert.equal(entry.item.inLanguage, resolved.language);
+      assert.equal(entry.item.name, resolved.guide.translations[resolved.language].title);
+      assert(html.includes(`href="${new URL(entry.item.url).pathname}"`));
+      return resolved.guide.id;
+    }), renderedIds);
+    assert.deepEqual(list.itemListElement.map((entry) => entry.position), renderedIds.map((_, index) => index + 1));
+    assert.equal(graph.find((entry) => entry["@type"] === "CollectionPage").mainEntity["@id"], list["@id"]);
+  }
+});
+
+test("resource attribution identifies Renewables separately from the official issuing authority", () => {
+  for (const path of catalog.RESOURCE_PATHS) {
+    const { language, guide } = catalog.resolveResourcePath(path);
+    const metadata = seo.getPageSeo(path);
+    const graph = metadata.structuredData["@graph"];
+    const publisher = graph.find((entry) => entry["@type"] === "Organization");
+    assert.equal(publisher.name, "Renewables");
+    assert.equal(publisher.url, `${seo.SITE_URL}/`);
+    assert.equal(new Set(graph.map((entry) => entry["@id"])).size, graph.length);
+    assert(render(path).includes(`id="editorial-policy"`));
+    assert(render(path).includes(discovery[language].editorialTitle));
+    if (guide) {
+      const article = graph.find((entry) => entry["@type"] === "Article");
+      assert.equal(article.author["@id"], publisher["@id"]);
+      assert.equal(article.publisher["@id"], publisher["@id"]);
+      assert(article.citation.includes(guide.sources.find((source) => source.id === guide.authority.sourceId).url));
+      assert(render(path).includes('class="resource-key-facts"'));
+      assert(metadata.robots.includes("max-snippet:-1"));
+    }
   }
 });
 

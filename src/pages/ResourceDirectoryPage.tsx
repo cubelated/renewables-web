@@ -10,6 +10,7 @@ import { readDeviceTimeZone, residenceForTimeZone, serverDeviceTimeZone, sortRes
 import { resourceOrderCopy } from "../content/resources/order-locales";
 import WorkforceCountryNotes from "../components/resources/WorkforceCountryNotes";
 import { workforceSources } from "../content/resources/workforce-sources";
+import EditorialPolicy from "../components/resources/EditorialPolicy";
 
 export default function ResourceDirectoryPage({ language = "en" }: { language?: ResourceLanguage }) {
   const [filters, setFilters] = useState<ResourceFilters>({ ...emptyFilters });
@@ -68,6 +69,7 @@ export default function ResourceDirectoryPage({ language = "en" }: { language?: 
         })}</div> : <div className="resource-empty" role="region" aria-label={t.results}><BookOpen size={30} aria-hidden="true" /><h3>{resultState === "unavailable" ? t.guideUnavailable : resultState === "needs-verification" ? t.needsVerification : t.empty}</h3><p>{t.emptyHelp}</p>{filters.residence === "TW" && filters.document === "arc" && <AuthorityLink url={hkMacao ? workforceSources.hkMacaoResidence.url : "https://www.immigration.gov.tw/5475/5478/141465/141808/141970"}>{t.generalResidence}</AuthorityLink>}</div>}
       </section>
       <aside className="resource-tool"><CalendarDays size={26} aria-hidden="true" /><div><h2><a href={CALCULATOR_LOCALES[language].path}>{t.calculator}<ArrowRight size={18} aria-hidden="true" /></a></h2><p>{t.calculatorNote}</p></div></aside>
+      <EditorialPolicy language={language} />
       <p className="resource-disclaimer">{t.disclaimer}</p>
       <noscript><p>{language === "zh-TW" ? "所有指南均可直接閱讀；篩選功能需要 JavaScript。" : language === "id-ID" ? "Semua panduan dapat dibaca langsung; filter memerlukan JavaScript." : "All guides are directly readable; interactive filtering needs JavaScript."}</p></noscript>
       <nav className="resource-translation-links" aria-label={t.language}>{(["en", "id-ID", "zh-TW"] as const).map((value) => <a key={value} href={directoryPath(value)} hrefLang={value} lang={value}>{value === "en" ? "English" : value === "id-ID" ? "Bahasa Indonesia" : "繁體中文"}</a>)}</nav>

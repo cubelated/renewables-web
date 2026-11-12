@@ -1,7 +1,9 @@
 # Renewal resource center
 
 This is a public, curated preparation library, not an immigration eligibility
-engine or an application service. No deployment is performed by this change.
+engine or an application service. The user approved production deployment of the
+completed discovery update on 2026-11-13; see the deployment record in
+[Google and AI search discovery](search-and-ai-discovery.md).
 
 ## Architecture and routes
 
@@ -253,6 +255,10 @@ metadata, and sitemap entries then derive from the data. Keep the stable slug.
 
 ## SEO and sitemap
 
+See [Google and AI search discovery](search-and-ai-discovery.md) for the public
+editorial standards, published-guide discovery schema, live crawl checks and
+owner account steps needed after an approved deployment.
+
 `seo.ts` generates unique titles/descriptions, self-canonicals, Open Graph article
 metadata, `Article` or `CollectionPage`, and `BreadcrumbList`. Resource pages do not
 copy homepage FAQ or software schema. Alternates refer only to published content;
@@ -366,9 +372,10 @@ Confirm sitemap/canonical values and HTTP 404 behavior on the public hostname.
 | --- | --- |
 | `npm ci --cache .npm` | Passed; used a workspace cache and authorized network access after restricted installation attempts failed. Dependency versions and lockfile are unchanged. |
 | `npm run lint` | Passed with zero errors; two existing unused-disable warnings in generated `worker-configuration.d.ts`. |
-| `npm run test` | 91 passed, zero failures or skips, including 36 resource tests covering the catalog, workforce research, device-zone ordering and localized SEO. |
+| `npm run test` | 97 passed, zero failures or skips, covering the resource catalog, workforce research, device-zone ordering, localized SEO, discovery schema and crawler exclusions. |
 | `npm run build` | Passed: TypeScript, client build, SSR build, prerender. Also rerun successfully through the final `check`. |
-| `npm run check` | Passed: production build, SEO validation of 66 HTML documents, and Wrangler deployment dry run. Vite reports a 556.14 kB minified entry chunk (169.90 kB gzip); the in-memory catalog remains bundled, with no new dependencies. The restricted CLI could not write its default user-profile log; the dry run was repeated successfully with a workspace log path. |
+| `npm run check` | Passed: production build, SEO validation of 66 HTML documents, and Wrangler deployment dry run with a workspace log path. Vite reports a 560.17 kB minified entry chunk (171.16 kB gzip); the in-memory catalog remains bundled, with no new dependencies. |
+| `npm run check:discovery` | Passed against all 65 production sitemap URLs and all 65 local-preview URLs: no HTTP, robots, canonical, language, indexing-header or snippet exclusions detected. This is HTTP/robots verification, not proof of indexing or access from actual provider crawler IPs. |
 | `npm run resources:sources` | Passed structural publication/source checks and printed the recorded access inventory. No claim that every source was directly accessible. |
 | `npm run test:resources:browser` | Passed on the final build using installed headless Chrome and temporary Wrangler 4.160.1. All 65 sitemap routes GET/HEAD 200; unknown guides and unpublished translations 404; trailing slash redirect; stable query canonical. |
 | Resource browser layout checks | 80 route/width combinations at 320, 375, 768, and 1440px; no horizontal overflow, runtime exceptions, or hydration errors. Filtering (including professional, overseas-student, NHI, graduate work and national-ID cases), search, reset, language independence, keyboard selection/Tab/Enter, visible focus, official link attributes, reload, reduced motion, no API requests, and no-JavaScript guide content passed. |
@@ -381,12 +388,12 @@ Confirm sitemap/canonical values and HTTP 404 behavior on the public hostname.
 
 The initial local-runtime attempt failed with pinned Wrangler 4.88.0; the temporary
 4.160.1 CLI ran successfully with the original production compatibility date.
-Browser checks ran against the completed final build. No production deployment
-was performed.
+Browser checks ran against the completed final build. The subsequent approved
+production deployment is recorded in `search-and-ai-discovery.md`.
 
-The first restricted localized-SEO test run hit a Vite module-loading timeout and
-was canceled. The complete suite was rerun with native process access and passed
-all 91 tests; the browser suite then passed against the final generated files.
+An earlier restricted localized-SEO test run hit a Vite module-loading timeout and
+was canceled. The final discovery suite ran with native process access and passed
+all 97 tests.
 
 `npm ci` reported 18 audit findings in the existing locked dependency tree
 (1 low, 9 moderate, 8 high). Dependency remediation was not part of this content
@@ -414,6 +421,10 @@ Created (including the expanded catalog):
   `scripts/workforce-resources.test.mjs`, `docs/taiwan-workforce-country-research.md`.
 - `docs/renewal-resource-center.md`, `renewal-resource-sources.md`,
   `renewal-resource-expanded-inventory.md`.
+- `src/content/resources/discovery.ts`,
+  `src/components/resources/EditorialPolicy.tsx`,
+  `scripts/check-search-discovery.mjs`, `scripts/search-discovery.test.mjs`,
+  `docs/search-and-ai-discovery.md`.
 
 Changed:
 

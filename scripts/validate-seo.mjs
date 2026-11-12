@@ -13,10 +13,11 @@ const sitemap = await readFile(path.join(distDir, "sitemap.xml"), "utf8");
 const sitemapUrls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
 // Read the publication-gated catalog, independently of the generated sitemap.
 const contentServer = await createServer({ server: { middlewareMode: true, hmr: { server: createHttpServer() } }, appType: "custom", optimizeDeps: { noDiscovery: true, entries: [] } });
-let catalog, resourceCopy;
+let catalog, resourceCopy, resourceDiscoveryCopy;
 try {
   catalog = await contentServer.ssrLoadModule("/src/content/resources/guides.ts");
   resourceCopy = (await contentServer.ssrLoadModule("/src/content/resources/locales.ts")).resourceCopy;
+  resourceDiscoveryCopy = (await contentServer.ssrLoadModule("/src/content/resources/discovery.ts")).resourceDiscoveryCopy;
 }
 finally { await contentServer.close(); }
 const pages = [
@@ -88,7 +89,7 @@ for (const pathname of catalog.RESOURCE_PATHS) {
   pages.push({
     file: `${pathname.slice(1)}/index.html`, canonical, robots: "index, follow", resource: true,
     language, ogLocale: ogLocales[language],
-    title: `${content?.title ?? resourceCopy[language].name} | Renewables`,
+    title: `${content?.title ?? resourceDiscoveryCopy[language].metaTitle} | Renewables`,
     description: content?.summary ?? resourceCopy[language].metaDescription,
     imageAlt: resourceCopy[language].seoImageAlt,
     alternates: [...languages.map((value) => [value, `https://renewables.cubelated.com${localizedPath(value)}`]), ["x-default", `https://renewables.cubelated.com${localizedPath("en")}`]],
@@ -252,11 +253,16 @@ for (const page of pages) {
     assert(metaContent(head, "property", "og:image:alt") === escapeHead(page.imageAlt), `${page.file} needs a localized social image description`);
     assert(jsonLdMatches.length === 1, "Resource pages need one independent JSON-LD block");
     const graph = JSON.parse(jsonLdMatches[0][1])["@graph"];
+    assert(html.includes('id="editorial-policy"'), "Resources need visible editorial attribution");
+    const publisher = graph.find((item) => item["@type"] === "Organization");
+    assert(publisher?.name === "Renewables" && publisher?.url === "https://renewables.cubelated.com/", "The resource publisher must remain independent from authorities");
     assert(!graph.some((item) => ["FAQPage", "SoftwareApplication", "WebApplication"].includes(item["@type"])), "Resources must not reuse home or calculator schema");
     const breadcrumb = graph.find((item) => item["@type"] === "BreadcrumbList");
     assert(breadcrumb?.itemListElement.at(-1).item === page.canonical, "Resource breadcrumbs must match canonical");
     const article = graph.find((item) => item["@type"] === "Article");
     if (article) {
+      assert(article.author?.["@id"] === publisher["@id"] && article.publisher?.["@id"] === publisher["@id"], "Guide attribution must resolve to the actual publisher");
+      assert(html.includes('class="resource-key-facts"'), "Guides need readable authority and document facts");
       assert(html.includes(escapeHtml(article.headline)), "Guide title must be visible");
       const webPage = graph.find((item) => item["@type"] === "WebPage");
       assert(webPage?.url === page.canonical && article.mainEntityOfPage["@id"] === webPage["@id"] && article.inLanguage === page.language, "Article must describe this guide");
@@ -270,6 +276,14 @@ for (const page of pages) {
       const collection = graph.find((item) => item["@type"] === "CollectionPage");
       assert(collection?.inLanguage === page.language && collection?.description === page.description, "Directory schema must use the actual page language");
       assert(!head.includes('property="article:modified_time"'), "Directories must not claim article metadata");
+      const list = graph.find((item) => item["@type"] === "ItemList");
+      assert(list?.numberOfItems === catalog.publishedGuides.length && list?.itemListElement.length === catalog.publishedGuides.length, "Directory discovery schema must cover the published catalog");
+      for (const entry of list.itemListElement) {
+        const destination = new URL(entry.item.url);
+        const resource = catalog.resolveResourcePath(destination.pathname);
+        assert(destination.origin === "https://renewables.cubelated.com" && resource?.guide && resource.language === entry.item.inLanguage && sitemapUrls.includes(entry.item.url), "Discovery schema cannot invent alternate-language pages");
+        assert(html.includes(`href="${destination.pathname}"`), "Discovery schema must match visible guide links");
+      }
       assert(html.includes('id="resource-nationality"') && html.includes('data-guide="'), "Directory must render filters and guides without JavaScript");
     }
     const alternates = [...head.matchAll(/<link\b[^>]*rel="alternate"[^>]*>/g)];

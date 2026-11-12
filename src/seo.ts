@@ -3,8 +3,10 @@ import { product } from "./content/product";
 import { CALCULATOR_LANGUAGES, CALCULATOR_LOCALES, calculatorLocaleForPath } from "./content/calculator-locales";
 import { calculatorCopy } from "./content/expiry-calculator";
 import type { CalculatorLanguage } from "./content/expiry-calculator";
-import { availableLanguages, directoryPath, guidePath, resolveResourcePath, RESOURCE_LANGUAGES, RESOURCE_PATHS } from "./content/resources/guides";
+import { availableLanguages, directoryPath, guidePath, publishedGuides, resolveResourcePath, RESOURCE_LANGUAGES, RESOURCE_PATHS } from "./content/resources/guides";
 import { resourceCopy } from "./content/resources/locales";
+import { resourceDiscoveryCopy } from "./content/resources/discovery";
+import { sortResourceGuides } from "./lib/resource-order";
 
 export const SITE_URL = "https://renewables.cubelated.com";
 export const SOCIAL_IMAGE_URL = `${SITE_URL}/social-preview.png`;
@@ -76,11 +78,11 @@ export function getPageSeo(pathname: string): PageSeo {
     const canonical = `${SITE_URL}${path}`;
     const languages = guide ? availableLanguages(guide) : RESOURCE_LANGUAGES;
     const localizedPath = (lang: typeof language) => guide ? guidePath(guide, lang) : directoryPath(lang);
-    const title = content ? `${content.title} | Renewables` : `${t.name} | Renewables`;
+    const title = `${content?.title ?? resourceDiscoveryCopy[language].metaTitle} | Renewables`;
     const description = content?.summary ?? t.metaDescription;
     return {
       title, description, canonical, language,
-      robots: "index, follow, max-image-preview:large",
+      robots: "index, follow, max-image-preview:large, max-snippet:-1",
       ogLocale: CALCULATOR_LOCALES[language].ogLocale,
       imageAlt: t.seoImageAlt,
       pageType: guide ? "article" : "website", modifiedOn: guide?.updatedOn ?? "2026-11-12",
@@ -88,6 +90,8 @@ export function getPageSeo(pathname: string): PageSeo {
       alternateLocales: languages.filter((lang) => lang !== language).map((lang) => CALCULATOR_LOCALES[lang].ogLocale),
       structuredData: {
         "@context": "https://schema.org", "@graph": [
+          publisherStructuredData(),
+          websiteStructuredData(),
           {
             "@type": "BreadcrumbList", "@id": `${canonical}#breadcrumbs`,
             itemListElement: [
@@ -100,20 +104,37 @@ export function getPageSeo(pathname: string): PageSeo {
             "@type": "WebPage", "@id": `${canonical}#page`, url: canonical,
             name: content.title, inLanguage: language, lastReviewed: guide.reviewedOn,
             dateModified: guide.updatedOn, mainEntity: { "@id": `${canonical}#article` },
+            description, isPartOf: { "@id": `${SITE_URL}/#website` },
             breadcrumb: { "@id": `${canonical}#breadcrumbs` }, isAccessibleForFree: true,
           }] : []),
           content && guide ? {
             "@type": "Article", "@id": `${canonical}#article`, headline: content.title,
             description, inLanguage: language, mainEntityOfPage: { "@id": `${canonical}#page` },
             dateModified: guide.updatedOn,
-            author: { "@type": "Organization", name: "Renewables", url: `${SITE_URL}/` },
-            publisher: { "@type": "Organization", name: "Renewables", url: `${SITE_URL}/` },
+            author: { "@id": `${SITE_URL}/#organization` },
+            publisher: { "@id": `${SITE_URL}/#organization` },
+            isPartOf: { "@id": `${SITE_URL}${directoryPath(language)}#directory` },
+            about: { "@type": "Thing", name: t.documents[guide.document] },
             isAccessibleForFree: true,
             citation: guide.sources.filter((source) => source.access !== "unavailable").map((source) => source.url),
           } : {
             "@type": "CollectionPage", "@id": `${canonical}#directory`, url: canonical,
             name: t.name, description, inLanguage: language, dateModified: "2026-11-12", isAccessibleForFree: true,
+            publisher: { "@id": `${SITE_URL}/#organization` },
+            isPartOf: { "@id": `${SITE_URL}/#website` },
+            mainEntity: { "@id": `${canonical}#guides` },
           },
+          ...(!guide ? [{
+            "@type": "ItemList", "@id": `${canonical}#guides`, numberOfItems: publishedGuides.length,
+            itemListElement: sortResourceGuides(publishedGuides, language, null).map((entry, index) => {
+              const version = entry.translations[language] ? language : "en";
+              const translated = entry.translations[version]!;
+              return {
+                "@type": "ListItem", position: index + 1,
+                item: { "@type": "WebPage", url: `${SITE_URL}${guidePath(entry, version)}`, name: translated.title, description: translated.summary, inLanguage: version },
+              };
+            }),
+          }] : []),
         ],
       },
     };
@@ -152,6 +173,22 @@ export function getPageSeo(pathname: string): PageSeo {
   };
 }
 
+function publisherStructuredData(): Record<string, unknown> {
+  return {
+    "@type": "Organization", "@id": `${SITE_URL}/#organization`,
+    name: product.name, url: `${SITE_URL}/`,
+    sameAs: [product.webAppUrl, product.googlePlayUrl],
+  };
+}
+
+function websiteStructuredData(): Record<string, unknown> {
+  return {
+    "@type": "WebSite", "@id": `${SITE_URL}/#website`, url: `${SITE_URL}/`,
+    name: product.name, inLanguage: CALCULATOR_LANGUAGES,
+    publisher: { "@id": `${SITE_URL}/#organization` },
+  };
+}
+
 /** Stable last-modified records. Building the site never advances these dates. */
 export function getPageModifiedOn(pathname: string): string {
   const path = normalizePath(pathname);
@@ -167,10 +204,8 @@ function calculatorStructuredData(language: CalculatorLanguage): Record<string, 
   return {
     "@context": "https://schema.org",
     "@graph": [
-      {
-        "@type": "WebSite", "@id": `${SITE_URL}/#website`,
-        url: `${SITE_URL}/`, name: "Renewables", inLanguage: CALCULATOR_LANGUAGES,
-      },
+      publisherStructuredData(),
+      websiteStructuredData(),
       {
         "@type": "WebPage", "@id": `${url}#page`, url,
         name: locale.title, description: locale.description,
@@ -204,15 +239,8 @@ function homeStructuredData(): Record<string, unknown> {
   return {
     "@context": "https://schema.org",
     "@graph": [
-      {
-        "@type": "WebSite",
-        "@id": `${SITE_URL}/#website`,
-        url: `${SITE_URL}/`,
-        name: "Renewables",
-        alternateName: "Renewables Life Admin Tracker",
-        description: HOME_DESCRIPTION,
-        inLanguage: CALCULATOR_LANGUAGES,
-      },
+      publisherStructuredData(),
+      { ...websiteStructuredData(), alternateName: "Renewables Life Admin Tracker", description: HOME_DESCRIPTION },
       {
         "@type": "SoftwareApplication",
         "@id": `${SITE_URL}/#app`,

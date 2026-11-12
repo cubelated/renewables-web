@@ -42,6 +42,7 @@
 		"build": "tsc -b && vite build && vite build --ssr src/react-app/entry-server.tsx --outDir .ssr && node scripts/prerender.mjs",
 		"cf-typegen": "wrangler types",
 		"check": "npm run build && node scripts/validate-seo.mjs && wrangler deploy --dry-run --config wrangler.json",
+		"check:discovery": "node scripts/check-search-discovery.mjs",
 		"deploy": "npm run build && node scripts/validate-seo.mjs && wrangler deploy --config wrangler.json",
 		"dev": "vite",
 		"lint": "eslint .",
