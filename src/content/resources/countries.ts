@@ -1,0 +1,31 @@
+import type { ResourceLanguage } from "./types";
+
+// Explicit country/region codes; OTHER never means an inferred citizenship.
+export const countries: { code: string; names: Record<ResourceLanguage, string> }[] = [
+  { code: "ID", names: { en: "Indonesia", "id-ID": "Indonesia", "zh-TW": "印尼" } },
+  { code: "TW", names: { en: "Taiwan", "id-ID": "Taiwan", "zh-TW": "台灣" } },
+  { code: "PH", names: { en: "Philippines", "id-ID": "Filipina", "zh-TW": "菲律賓" } },
+  { code: "TH", names: { en: "Thailand", "id-ID": "Thailand", "zh-TW": "泰國" } },
+  { code: "VN", names: { en: "Vietnam", "id-ID": "Vietnam", "zh-TW": "越南" } },
+  { code: "US", names: { en: "United States", "id-ID": "Amerika Serikat", "zh-TW": "美國" } },
+  { code: "GB", names: { en: "United Kingdom", "id-ID": "Britania Raya", "zh-TW": "英國" } },
+  { code: "CN", names: { en: "Mainland China", "id-ID": "Tiongkok daratan", "zh-TW": "中國大陸" } },
+  { code: "HK", names: { en: "Hong Kong", "id-ID": "Hong Kong", "zh-TW": "香港" } },
+  { code: "MO", names: { en: "Macao", "id-ID": "Makau", "zh-TW": "澳門" } },
+  { code: "MY", names: { en: "Malaysia", "id-ID": "Malaysia", "zh-TW": "馬來西亞" } },
+  { code: "JP", names: { en: "Japan", "id-ID": "Jepang", "zh-TW": "日本" } },
+  { code: "KR", names: { en: "South Korea", "id-ID": "Korea Selatan", "zh-TW": "韓國" } },
+  { code: "IN", names: { en: "India", "id-ID": "India", "zh-TW": "印度" } },
+  { code: "CA", names: { en: "Canada", "id-ID": "Kanada", "zh-TW": "加拿大" } },
+  { code: "AU", names: { en: "Australia", "id-ID": "Australia", "zh-TW": "澳洲" } },
+  { code: "NZ", names: { en: "New Zealand", "id-ID": "Selandia Baru", "zh-TW": "紐西蘭" } },
+  { code: "IE", names: { en: "Ireland", "id-ID": "Irlandia", "zh-TW": "愛爾蘭" } },
+  { code: "ZA", names: { en: "South Africa", "id-ID": "Afrika Selatan", "zh-TW": "南非" } },
+  { code: "SG", names: { en: "Singapore", "id-ID": "Singapura", "zh-TW": "新加坡" } },
+  { code: "DE", names: { en: "Germany", "id-ID": "Jerman", "zh-TW": "德國" } },
+  { code: "FR", names: { en: "France", "id-ID": "Prancis", "zh-TW": "法國" } },
+  { code: "MM", names: { en: "Myanmar", "id-ID": "Myanmar", "zh-TW": "緬甸" } },
+  { code: "SZ", names: { en: "Eswatini", "id-ID": "Eswatini", "zh-TW": "史瓦帝尼" } },
+  { code: "RU", names: { en: "Russia", "id-ID": "Rusia", "zh-TW": "俄羅斯" } },
+  { code: "OTHER", names: { en: "Another country or region", "id-ID": "Negara atau wilayah lain", "zh-TW": "其他國家或地區" } },
+];

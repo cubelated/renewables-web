@@ -5,6 +5,7 @@ import { Brand, CtaLink } from "./shared";
 const navigation = [
   ["Features", "#features"], ["How It Works", "#how-it-works"],
   ["Calculator", "/tools/expiry-calculator"], ["Pricing", "#pricing"], ["FAQ", "#faq"],
+  ["Resources", "/resources"],
   ["Privacy", "/privacy"], ["Support", "/support"],
 ] as const;
 
@@ -39,7 +40,7 @@ export default function Header() {
       if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setOpen(false);
     }}>
       <div className="relative mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-6">
-        <Brand />
+        <div className="shrink-0 lg:[&_span]:hidden xl:[&_span]:inline"><Brand /></div>
         <nav aria-label="Main navigation" className="hidden items-center gap-5 text-sm font-semibold text-slate-700 lg:flex xl:gap-7">
           {navigation.map(([label, href]) => <a key={href} href={href} className="py-2 transition hover:text-[#246df3]">{label}</a>)}
         </nav>

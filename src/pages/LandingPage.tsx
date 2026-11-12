@@ -408,6 +408,7 @@ export default function LandingPage() {
           <FooterColumn
             title="Resources"
             links={[
+              { label: "Resources", href: "/resources" },
               { label: "Free expiry date calculator", href: "/tools/expiry-calculator" },
               { label: "Privacy Policy", href: "/privacy" },
               { label: "Terms of Service", href: "/terms" },

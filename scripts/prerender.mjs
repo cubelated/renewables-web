@@ -3,6 +3,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   getPageSeo,
+  getPageModifiedOn,
+  SITE_URL,
   INDEXED_PATHS,
   render,
   renderSeoHead,
@@ -30,6 +32,9 @@ for (const pathname of INDEXED_PATHS) {
 }
 
 await writePage("/404", "404.html");
+// Derive sitemap entries from the same publication-gated routes as prerendering.
+const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${INDEXED_PATHS.map((pathname) => `  <url><loc>${SITE_URL}${pathname}</loc><lastmod>${getPageModifiedOn(pathname)}</lastmod></url>`).join("\n")}\n</urlset>\n`;
+await writeFile(path.join(distDir, "sitemap.xml"), sitemap);
 await rm(ssrDir, { recursive: true, force: true });
 
 async function writePage(pathname, outputPath) {

@@ -11,6 +11,7 @@ import type { Calendar, CalendarDate, DateDisplayFormat, DateUnit, NumericDateFo
 import { copyResult } from "../lib/calculator-clipboard";
 import { clientClock, serverClock, subscribeClock } from "../lib/calculator-clock";
 import "./expiry-calculator.css";
+import { directoryPath } from "../content/resources/guides";
 
 type Mode = "countdown" | "difference" | "arithmetic" | "converter";
 type InputFormat = NumericDateFormat | "native";
@@ -249,6 +250,7 @@ export default function ExpiryCalculatorPage({ language = "en" }: { language?: C
         </div>
       </div>
       <p className="calc-quick-note"><ShieldCheck size={14} aria-hidden="true" /><span className="calc-free">{t.free}</span><span>· {t.quickNote}</span></p>
+      <p className="calc-quick-note"><a href={directoryPath(language)}>{language === "zh-TW" ? "查找證件續期指南與官方資源" : language === "id-ID" ? "Temukan panduan perpanjangan dan sumber resmi" : "Find renewal guides and official resources"}</a></p>
       <section className="calc-cta" aria-labelledby="cta-heading">
         <div className="calc-cta-copy"><h2 id="cta-heading">{t.ctaTitle}</h2><p>{t.ctaText}</p></div>
         <div className="calc-cta-actions"><a href={product.webAppUrl} className="calc-button calc-button-primary"><Bell size={16} aria-hidden="true" />{t.track}<ArrowRight size={17} aria-hidden="true" /></a><a href={product.googlePlayUrl} className="calc-button calc-button-secondary"><Smartphone size={16} aria-hidden="true" />{t.android}</a></div>

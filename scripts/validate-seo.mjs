@@ -1,12 +1,24 @@
 import { access, readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { createServer } from "vite";
+import { createServer as createHttpServer } from "node:http";
 
 const projectRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   "..",
 );
 const distDir = path.join(projectRoot, "dist");
+const sitemap = await readFile(path.join(distDir, "sitemap.xml"), "utf8");
+const sitemapUrls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
+// Read the publication-gated catalog, independently of the generated sitemap.
+const contentServer = await createServer({ server: { middlewareMode: true, hmr: { server: createHttpServer() } }, appType: "custom", optimizeDeps: { noDiscovery: true, entries: [] } });
+let catalog, resourceCopy;
+try {
+  catalog = await contentServer.ssrLoadModule("/src/content/resources/guides.ts");
+  resourceCopy = (await contentServer.ssrLoadModule("/src/content/resources/locales.ts")).resourceCopy;
+}
+finally { await contentServer.close(); }
 const pages = [
   {
     file: "index.html",
@@ -66,6 +78,23 @@ const pages = [
     robots: "noindex, follow",
   },
 ];
+for (const pathname of catalog.RESOURCE_PATHS) {
+  const canonical = `https://renewables.cubelated.com${pathname}`;
+  const { language, guide } = catalog.resolveResourcePath(pathname);
+  const content = guide?.translations[language];
+  const languages = guide ? catalog.availableLanguages(guide) : catalog.RESOURCE_LANGUAGES;
+  const localizedPath = (value) => guide ? catalog.guidePath(guide, value) : catalog.directoryPath(value);
+  const ogLocales = { en: "en_US", "id-ID": "id_ID", "zh-TW": "zh_TW" };
+  pages.push({
+    file: `${pathname.slice(1)}/index.html`, canonical, robots: "index, follow", resource: true,
+    language, ogLocale: ogLocales[language],
+    title: `${content?.title ?? resourceCopy[language].name} | Renewables`,
+    description: content?.summary ?? resourceCopy[language].metaDescription,
+    imageAlt: resourceCopy[language].seoImageAlt,
+    alternates: [...languages.map((value) => [value, `https://renewables.cubelated.com${localizedPath(value)}`]), ["x-default", `https://renewables.cubelated.com${localizedPath("en")}`]],
+    alternateLocales: languages.filter((value) => value !== language).map((value) => ogLocales[value]),
+  });
+}
 
 const titles = new Set();
 const descriptions = new Set();
@@ -218,6 +247,48 @@ for (const page of pages) {
     assert(calculatorLinks.some((link) => link[1].replace(/<[^>]*>/g, "").trim() === "Free expiry date calculator"), "Homepage needs a descriptive calculator link");
     assert(html.includes('href="https://app.renewables.cubelated.com/"'), "Calculator web CTA must use the verified destination");
     assert(html.includes('href="https://play.google.com/store/apps/details?id=com.cubelated.renewly"'), "Calculator Play CTA must use the verified destination");
+  } else if (page.resource) {
+    assert(title === escapeHead(page.title) && description === escapeHead(page.description), `${page.file} needs its translated title and description`);
+    assert(metaContent(head, "property", "og:image:alt") === escapeHead(page.imageAlt), `${page.file} needs a localized social image description`);
+    assert(jsonLdMatches.length === 1, "Resource pages need one independent JSON-LD block");
+    const graph = JSON.parse(jsonLdMatches[0][1])["@graph"];
+    assert(!graph.some((item) => ["FAQPage", "SoftwareApplication", "WebApplication"].includes(item["@type"])), "Resources must not reuse home or calculator schema");
+    const breadcrumb = graph.find((item) => item["@type"] === "BreadcrumbList");
+    assert(breadcrumb?.itemListElement.at(-1).item === page.canonical, "Resource breadcrumbs must match canonical");
+    const article = graph.find((item) => item["@type"] === "Article");
+    if (article) {
+      assert(html.includes(escapeHtml(article.headline)), "Guide title must be visible");
+      const webPage = graph.find((item) => item["@type"] === "WebPage");
+      assert(webPage?.url === page.canonical && article.mainEntityOfPage["@id"] === webPage["@id"] && article.inLanguage === page.language, "Article must describe this guide");
+      assert(article.citation.length > 0 && article.citation.every((url) => url.startsWith("https://")), "Guides need official citations");
+      assert(html.includes(`<time dateTime="${webPage.lastReviewed}">`) || html.includes(`<time datetime="${webPage.lastReviewed}">`), "Review date must be visible");
+      assert(metaContent(head, "property", "og:type") === "article", "Guide social metadata must describe an article");
+      assert(metaContent(head, "property", "article:modified_time") === article.dateModified, "Article modification metadata must agree");
+      for (const id of ["overview", "before", "checklist", "apply", "sources", "notes"]) assert(html.includes(`id="${id}"`), `Guide content missing: ${id}`);
+      assert(html.length > 15000 && html.includes('rel="noopener noreferrer"'), "Guide must prerender substantive content and safe official links");
+    } else {
+      const collection = graph.find((item) => item["@type"] === "CollectionPage");
+      assert(collection?.inLanguage === page.language && collection?.description === page.description, "Directory schema must use the actual page language");
+      assert(!head.includes('property="article:modified_time"'), "Directories must not claim article metadata");
+      assert(html.includes('id="resource-nationality"') && html.includes('data-guide="'), "Directory must render filters and guides without JavaScript");
+    }
+    const alternates = [...head.matchAll(/<link\b[^>]*rel="alternate"[^>]*>/g)];
+    assert(alternates.length === page.alternates.length, `${page.file} must list exactly its published versions and x-default`);
+    for (const [language, url] of page.alternates) {
+      assert(alternates.filter(([tag]) => tag.includes(`hreflang="${language}"`) && tag.includes(`href="${url}"`)).length === 1, `Missing or duplicated resource alternate ${language} on ${page.file}`);
+      assert(new RegExp(`<a\\b[^>]*href="${new URL(url).pathname}"[^>]*`, "i").test(html), `Resource needs a crawlable language link: ${language}`);
+    }
+    const alternateLocales = [...head.matchAll(/<meta\b[^>]*property="og:locale:alternate"[^>]*>/g)].map(([tag]) => tag.match(/content="([^"]*)"/)?.[1]);
+    assert(alternateLocales.length === page.alternateLocales.length && page.alternateLocales.every((locale) => alternateLocales.includes(locale)), `${page.file} has incorrect social locale alternatives`);
+    for (const [tag] of alternates) {
+      const href = tag.match(/href="([^"]+)"/)?.[1];
+      assert(sitemapUrls.includes(href), "Only published translations can be alternates");
+      const target = new URL(href).pathname;
+      const alternateHtml = await readFile(path.join(distDir, `${target.slice(1)}/index.html`), "utf8");
+      assert(alternateHtml.includes(`hreflang="${page.language}" href="${page.canonical}"`), "Resource alternates must be reciprocal");
+    }
+    assert(html.includes('href="/tools/expiry-calculator"') || /href="\/(id|zh-tw)\/tools\/expiry-calculator"/.test(html), "Resources must link to calculator");
+    assert(!html.includes('href="/app-phone.webp"'), "Resources must not preload homepage hero");
   } else {
     assert(
       jsonLdMatches.length === 0,
@@ -232,8 +303,6 @@ for (const page of pages) {
   }
 }
 
-const sitemap = await readFile(path.join(distDir, "sitemap.xml"), "utf8");
-const sitemapUrls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
 assert(new Set(sitemapUrls).size === sitemapUrls.length, "Sitemap URLs must be unique");
 assert(sitemapUrls.length === pages.filter((page) => page.robots.startsWith("index")).length, "Sitemap must contain only canonical, indexable pages");
 for (const page of pages.filter((page) => page.robots.startsWith("index"))) {
@@ -266,4 +335,9 @@ function metaContent(head, attribute, name) {
 
 function escapeHtml(value) {
   return value.replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("'", "&#x27;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+}
+
+// Head attributes are double quoted; the shared renderer leaves apostrophes literal.
+function escapeHead(value) {
+  return escapeHtml(value).replaceAll("&#x27;", "'");
 }

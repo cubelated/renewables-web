@@ -3,12 +3,14 @@ import { product } from "./content/product";
 import { CALCULATOR_LANGUAGES, CALCULATOR_LOCALES, calculatorLocaleForPath } from "./content/calculator-locales";
 import { calculatorCopy } from "./content/expiry-calculator";
 import type { CalculatorLanguage } from "./content/expiry-calculator";
+import { availableLanguages, directoryPath, guidePath, resolveResourcePath, RESOURCE_LANGUAGES, RESOURCE_PATHS } from "./content/resources/guides";
+import { resourceCopy } from "./content/resources/locales";
 
 export const SITE_URL = "https://renewables.cubelated.com";
 export const SOCIAL_IMAGE_URL = `${SITE_URL}/social-preview.png`;
 export const GOOGLE_PLAY_URL = product.googlePlayUrl;
 
-export const INDEXED_PATHS = ["/", "/privacy", "/terms", "/support", ...Object.values(CALCULATOR_LOCALES).map((locale) => locale.path)] as const;
+export const INDEXED_PATHS = ["/", "/privacy", "/terms", "/support", ...Object.values(CALCULATOR_LOCALES).map((locale) => locale.path), ...RESOURCE_PATHS];
 
 type IndexedPath = (typeof INDEXED_PATHS)[number];
 
@@ -23,6 +25,8 @@ export type PageSeo = {
   alternates: { language: string; url: string }[];
   alternateLocales: string[];
   structuredData: Record<string, unknown> | null;
+  pageType?: "website" | "article";
+  modifiedOn?: string;
 };
 
 const HOME_DESCRIPTION =
@@ -57,12 +61,63 @@ const PAGE_COPY: Record<
 };
 
 export function normalizePath(pathname: string): string {
+  pathname = pathname.split(/[?#]/)[0];
   if (!pathname || pathname === "/") return "/";
   return `/${pathname.split("/").filter(Boolean).join("/")}`;
 }
 
 export function getPageSeo(pathname: string): PageSeo {
   const path = normalizePath(pathname);
+  const resource = resolveResourcePath(path);
+  if (resource) {
+    const { language, guide } = resource;
+    const content = guide?.translations[language];
+    const t = resourceCopy[language];
+    const canonical = `${SITE_URL}${path}`;
+    const languages = guide ? availableLanguages(guide) : RESOURCE_LANGUAGES;
+    const localizedPath = (lang: typeof language) => guide ? guidePath(guide, lang) : directoryPath(lang);
+    const title = content ? `${content.title} | Renewables` : `${t.name} | Renewables`;
+    const description = content?.summary ?? t.metaDescription;
+    return {
+      title, description, canonical, language,
+      robots: "index, follow, max-image-preview:large",
+      ogLocale: CALCULATOR_LOCALES[language].ogLocale,
+      imageAlt: t.seoImageAlt,
+      pageType: guide ? "article" : "website", modifiedOn: guide?.updatedOn ?? "2026-11-12",
+      alternates: [...languages.map((lang) => ({ language: lang, url: `${SITE_URL}${localizedPath(lang)}` })), { language: "x-default", url: `${SITE_URL}${localizedPath("en")}` }],
+      alternateLocales: languages.filter((lang) => lang !== language).map((lang) => CALCULATOR_LOCALES[lang].ogLocale),
+      structuredData: {
+        "@context": "https://schema.org", "@graph": [
+          {
+            "@type": "BreadcrumbList", "@id": `${canonical}#breadcrumbs`,
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Renewables", item: `${SITE_URL}/` },
+              { "@type": "ListItem", position: 2, name: t.name, item: `${SITE_URL}${directoryPath(language)}` },
+              ...(content ? [{ "@type": "ListItem", position: 3, name: content.title, item: canonical }] : []),
+            ],
+          },
+          ...(content && guide ? [{
+            "@type": "WebPage", "@id": `${canonical}#page`, url: canonical,
+            name: content.title, inLanguage: language, lastReviewed: guide.reviewedOn,
+            dateModified: guide.updatedOn, mainEntity: { "@id": `${canonical}#article` },
+            breadcrumb: { "@id": `${canonical}#breadcrumbs` }, isAccessibleForFree: true,
+          }] : []),
+          content && guide ? {
+            "@type": "Article", "@id": `${canonical}#article`, headline: content.title,
+            description, inLanguage: language, mainEntityOfPage: { "@id": `${canonical}#page` },
+            dateModified: guide.updatedOn,
+            author: { "@type": "Organization", name: "Renewables", url: `${SITE_URL}/` },
+            publisher: { "@type": "Organization", name: "Renewables", url: `${SITE_URL}/` },
+            isAccessibleForFree: true,
+            citation: guide.sources.filter((source) => source.access !== "unavailable").map((source) => source.url),
+          } : {
+            "@type": "CollectionPage", "@id": `${canonical}#directory`, url: canonical,
+            name: t.name, description, inLanguage: language, dateModified: "2026-11-12", isAccessibleForFree: true,
+          },
+        ],
+      },
+    };
+  }
   const copy = PAGE_COPY[path as IndexedPath];
   const locale = calculatorLocaleForPath(path);
   const shared = {
@@ -95,6 +150,15 @@ export function getPageSeo(pathname: string): PageSeo {
     robots: "index, follow, max-image-preview:large",
     structuredData: path === "/" ? homeStructuredData() : locale ? calculatorStructuredData(locale.language) : null,
   };
+}
+
+/** Stable last-modified records. Building the site never advances these dates. */
+export function getPageModifiedOn(pathname: string): string {
+  const path = normalizePath(pathname);
+  const resource = resolveResourcePath(path);
+  if (resource) return resource.guide?.updatedOn ?? "2026-11-12";
+  if (path === "/" || calculatorLocaleForPath(path)) return "2026-11-12";
+  return "2026-07-29";
 }
 
 function calculatorStructuredData(language: CalculatorLanguage): Record<string, unknown> {

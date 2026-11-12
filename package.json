@@ -47,6 +47,9 @@
 		"lint": "eslint .",
 		"test": "node --test scripts/*.test.mjs",
 		"test:browser": "node scripts/calculator-browser-check.mjs",
+		"test:resources:browser": "node scripts/resources-browser-check.mjs",
+		"resources:sources": "node scripts/check-resource-sources.mjs",
+		"resources:inventory": "node scripts/write-resource-inventory.mjs",
 		"preview": "npm run build && vite preview"
 	},
 	"type": "module"

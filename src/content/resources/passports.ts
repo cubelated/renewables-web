@@ -1,0 +1,70 @@
+import { citizenOf, cited as c, curatedGuide } from "./curation";
+import { reviewedSources as s } from "./reviewed-sources";
+
+export const additionalPassportGuides = [
+  curatedGuide({
+    reviewedOn: "2026-11-12",
+    id: "tw-passport-domestic", slug: "taiwan-passport-renewal", nationalities: citizenOf("TW"), residences: ["TW"], document: "passport", serviceType: "renewal",
+    authority: "Bureau of Consular Affairs (BOCA), Ministry of Foreign Affairs", sources: [s.boca],
+    keywords: ["Taiwan passport", "中華民國護照換發", "台灣護照", "ROC"],
+    timing: { kind: "printed-expiry", ...c("Track the expiry on the actual passport. A replacement application issues a new document; it does not simply extend the old passport's printed date.", s.boca) },
+    content: {
+      title: "Taiwan Passport Renewal in Taiwan", summary: "Prepare an ordinary domestic Taiwan passport renewal through BOCA or a MOFA branch, with separate checks for representation and minors.",
+      scope: "For ROC (Taiwan) nationals applying in Taiwan through the ordinary domestic route. The standard adult checklist here assumes a National ID and a passport available to surrender. Lost passports, minors, guardianship, and nationals without household registration need their specific route confirmed.",
+      beforeYouStart: [c("Identify whether this is ordinary replacement or a lost/damaged-passport case before gathering documents. Check BOCA's current service notices and any online-route eligibility separately.", s.boca)],
+      commonRequirements: [c("Prepare the passport, completed short passport application sheet, two photos meeting BOCA specifications, and the required Taiwan National ID.", s.boca)],
+      conditionalRequirements: [c("Minors and applicants under guardianship have consent requirements. An entrusted agent needs the appropriate authorization; the permitted agent categories are restricted.", s.boca)],
+      suggestions: ["Keep the application receipt with your travel plan; avoid booking travel based on an assumed collection date.", "After collection, check your name and passport details before updating other records."],
+      steps: [c("Submit through BOCA or a MOFA branch using the route that applies to you, in person or through an eligible authorized agent.", s.boca), c("Follow the accepted application's payment and collection instructions, retaining its receipt.", s.boca)],
+      importantNotes: [c("This domestic checklist must not be reused for an overseas mission. Confirm the present fee, collection arrangements, and special-case evidence with BOCA rather than relying on a universal completion estimate.", s.boca)],
+    },
+  }),
+  curatedGuide({
+    reviewedOn: "2026-11-12",
+    id: "ph-passport-tw", slug: "philippine-passport-renewal-taiwan", nationalities: citizenOf("PH"), residences: ["TW"], document: "passport", serviceType: "renewal",
+    authority: "Manila Economic and Cultural Office (MECO)", sources: [s.meco, s.mecoProcess], keywords: ["Philippines", "Filipino", "OFW", "MECO", "菲律賓護照"],
+    timing: { kind: "printed-expiry", ...c("Plan around the existing passport's expiry and your travel needs. Check the live appointment service; appointment availability is not a guaranteed processing or collection date.", s.mecoProcess) },
+    content: {
+      title: "Philippine Passport Renewal in Taiwan", summary: "MECO's ordinary adult resident and OFW route, including the passport, ARC, application form, appointment, and personal appearance.",
+      scope: "For adult Philippine citizens residing or working in Taiwan with a passport and valid ARC. Not a minor, lost-passport, first-passport, dual-citizenship, or name-change checklist; MECO lists those circumstances separately.",
+      beforeYouStart: [c("Use MECO's Adult Residents and OFWs checklist. Some cases are treated as new applications rather than renewals; do not choose a route solely because an old passport exists.", s.meco)],
+      commonRequirements: [c("Prepare the printed application form, latest Philippine passport and copy of its data/signature pages, plus valid Taiwan ARC and copies of both sides.", s.meco)],
+      conditionalRequirements: [c("Name changes, dual/multiple citizenship, naturalization, and minors need additional case-specific evidence. Ask MECO which checklist applies.", s.meco)],
+      suggestions: ["Check the appointment confirmation's office and time before travelling.", "Keep passport and ARC dates as separate records, and review your name on the new passport."],
+      steps: [c("Follow the appointment link from MECO's current service page and confirm the application as instructed by its email.", s.mecoProcess), c("Attend personally with the form and complete supporting documents; follow MECO's payment and release instructions.", s.meco, s.mecoProcess)],
+      importantNotes: [c("MECO describes priority/walk-in exceptions separately. Ordinary appointment guidance is not a promise that every applicant must, or can, use the same appointment arrangement. Confirm current fees and schedules directly.", s.mecoProcess)],
+    },
+  }),
+  curatedGuide({
+    reviewedOn: "2026-11-12",
+    id: "th-passport-tw", slug: "thai-passport-renewal-taiwan", nationalities: citizenOf("TH"), residences: ["TW"], document: "passport", serviceType: "renewal",
+    authority: "Thailand Trade and Economic Office, Taipei", sources: [s.thai], keywords: ["Thailand", "Thai", "TTEO", "หนังสือเดินทาง", "泰國護照"],
+    timing: { kind: "printed-expiry", ...c("Track the passport and Thai identity card separately. Confirm the office's current submission/collection arrangements before relying on a planned trip.", s.thai) },
+    content: {
+      title: "Thai Passport Renewal or Replacement in Taiwan", summary: "Prepare for an adult Thai electronic passport application at the Thailand Trade and Economic Office in Taipei.",
+      scope: "For adult Thai citizens applying for an ordinary replacement passport in Taiwan. The office has a separate minor checklist; lost passports and identity changes are conditional cases.",
+      beforeYouStart: [c("Check your Thai national ID first: the office says a missing or expired Thai ID must be replaced before applying for a passport.", s.thai)],
+      commonRequirements: [c("Prepare the passport application, current Thai passport, and original Thai national ID. Personal attendance is required.", s.thai)],
+      conditionalRequirements: [c("A lost passport needs the specified loss report. Name changes need supporting evidence. Applicants under 20 have a separate checklist and parental-attendance rules.", s.thai)],
+      suggestions: ["Keep copies of the application and collection instructions without sharing identity numbers in public messages.", "After passport replacement, ask the Taiwan authority or employer which linked records need updating."],
+      steps: [c("Read the office's passport page and confirm the present reception arrangements before attending with the required originals.", s.thai), c("Complete the personal application and follow the office's collection or delivery instructions for your case.", s.thai)],
+      importantNotes: [c("The official page was last updated in October 2024 and was reviewed again for this guide. No old fee or processing estimate is republished. Contact the office to confirm current amounts and service arrangements.", s.thai)],
+    },
+  }),
+  curatedGuide({
+    reviewedOn: "2026-11-12",
+    id: "id-passport-domestic", slug: "indonesian-passport-renewal-indonesia", nationalities: citizenOf("ID"), residences: ["ID"], document: "passport", serviceType: "renewal",
+    authority: "Indonesian Directorate General of Immigration / chosen immigration office", sources: [s.mPassport, s.indonesiaPassport], keywords: ["Indonesia", "M-Paspor", "perpanjang paspor", "penggantian paspor", "印尼境內護照"],
+    timing: { kind: "printed-expiry", ...c("Use the dates and payment instructions displayed by the accepted M-Paspor booking. Office availability and passport products vary; no fixed payment offset or eligibility window is calculated here.", s.mPassport) },
+    content: {
+      title: "Indonesian Passport Renewal in Indonesia with M-Paspor", summary: "A domestic M-Paspor preparation route, with originals, the existing passport, and the selected immigration office's checklist.",
+      scope: "For Indonesian citizens making an ordinary domestic passport replacement application. This is not KDEI Taipei's overseas appointment system. The supporting official reference is an immigration-office guide; confirm the selected office's current products and case rules.",
+      beforeYouStart: [c("Choose ordinary replacement versus a child, lost, or damaged-passport application. The selected office and M-Paspor determine the documents and available appointments.", s.mPassport, s.indonesiaPassport)],
+      commonRequirements: [c("Prepare the existing passport, the originals requested for your application category, and the M-Paspor registration evidence. Replacement applicants must bring their old passport.", s.mPassport)],
+      conditionalRequirements: [c("Document requirements depend on the passport and applicant category; children, identity changes, loss, and damage must use the corresponding official checklist.", s.indonesiaPassport)],
+      suggestions: ["Keep booking and payment evidence together. Check that you chose the correct office before paying.", "Allow room for document correction without treating a personal reminder as a legal deadline."],
+      steps: [c("Use the official M-Paspor application to register, select the application type, supply the requested evidence, and choose an available office and date.", s.mPassport), c("Follow the current booking's payment instructions and attend with registration proof and originals. Obtain the office's collection instructions.", s.mPassport)],
+      importantNotes: [c("The office reference contains product-specific and older operational details; these are not generalized into national fees, processing times, or payment cutoffs. Reconfirm them in the current official application.", s.mPassport)],
+    },
+  }),
+];
