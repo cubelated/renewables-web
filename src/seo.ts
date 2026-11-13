@@ -11,6 +11,7 @@ import { sortResourceGuides } from "./lib/resource-order";
 export const SITE_URL = "https://renewables.cubelated.com";
 export const SOCIAL_IMAGE_URL = `${SITE_URL}/social-preview.png`;
 export const GOOGLE_PLAY_URL = product.googlePlayUrl;
+const RESOURCE_DIRECTORY_UPDATED_ON = "2026-11-13";
 
 export const INDEXED_PATHS = ["/", "/privacy", "/terms", "/support", ...Object.values(CALCULATOR_LOCALES).map((locale) => locale.path), ...RESOURCE_PATHS];
 
@@ -85,7 +86,7 @@ export function getPageSeo(pathname: string): PageSeo {
       robots: "index, follow, max-image-preview:large, max-snippet:-1",
       ogLocale: CALCULATOR_LOCALES[language].ogLocale,
       imageAlt: t.seoImageAlt,
-      pageType: guide ? "article" : "website", modifiedOn: guide?.updatedOn ?? "2026-11-12",
+      pageType: guide ? "article" : "website", modifiedOn: guide?.updatedOn ?? RESOURCE_DIRECTORY_UPDATED_ON,
       alternates: [...languages.map((lang) => ({ language: lang, url: `${SITE_URL}${localizedPath(lang)}` })), { language: "x-default", url: `${SITE_URL}${localizedPath("en")}` }],
       alternateLocales: languages.filter((lang) => lang !== language).map((lang) => CALCULATOR_LOCALES[lang].ogLocale),
       structuredData: {
@@ -119,7 +120,7 @@ export function getPageSeo(pathname: string): PageSeo {
             citation: guide.sources.filter((source) => source.access !== "unavailable").map((source) => source.url),
           } : {
             "@type": "CollectionPage", "@id": `${canonical}#directory`, url: canonical,
-            name: t.name, description, inLanguage: language, dateModified: "2026-11-12", isAccessibleForFree: true,
+            name: t.name, description, inLanguage: language, dateModified: RESOURCE_DIRECTORY_UPDATED_ON, isAccessibleForFree: true,
             publisher: { "@id": `${SITE_URL}/#organization` },
             isPartOf: { "@id": `${SITE_URL}/#website` },
             mainEntity: { "@id": `${canonical}#guides` },
@@ -184,7 +185,7 @@ function publisherStructuredData(): Record<string, unknown> {
 function websiteStructuredData(): Record<string, unknown> {
   return {
     "@type": "WebSite", "@id": `${SITE_URL}/#website`, url: `${SITE_URL}/`,
-    name: product.name, inLanguage: CALCULATOR_LANGUAGES,
+    name: product.name, alternateName: [...product.alternateSiteNames], inLanguage: CALCULATOR_LANGUAGES,
     publisher: { "@id": `${SITE_URL}/#organization` },
   };
 }
@@ -193,8 +194,9 @@ function websiteStructuredData(): Record<string, unknown> {
 export function getPageModifiedOn(pathname: string): string {
   const path = normalizePath(pathname);
   const resource = resolveResourcePath(path);
-  if (resource) return resource.guide?.updatedOn ?? "2026-11-12";
-  if (path === "/" || calculatorLocaleForPath(path)) return "2026-11-12";
+  if (resource) return resource.guide?.updatedOn ?? RESOURCE_DIRECTORY_UPDATED_ON;
+  if (path === "/") return "2026-11-13";
+  if (calculatorLocaleForPath(path)) return "2026-11-12";
   return "2026-07-29";
 }
 
@@ -240,7 +242,7 @@ function homeStructuredData(): Record<string, unknown> {
     "@context": "https://schema.org",
     "@graph": [
       publisherStructuredData(),
-      { ...websiteStructuredData(), alternateName: "Renewables Life Admin Tracker", description: HOME_DESCRIPTION },
+      { ...websiteStructuredData(), description: HOME_DESCRIPTION },
       {
         "@type": "SoftwareApplication",
         "@id": `${SITE_URL}/#app`,

@@ -418,7 +418,7 @@ export default function LandingPage() {
         </div>
 
         <div className="mx-auto mt-10 max-w-7xl border-t border-slate-200 pt-6 text-center text-sm text-slate-500">
-          © {new Date().getFullYear()} Renewables. All rights reserved.
+          © {new Date().getFullYear()} {product.alternateSiteNames[0]}. All rights reserved.
         </div>
       </footer>
     </div>

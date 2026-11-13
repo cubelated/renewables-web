@@ -2,6 +2,7 @@
 // Limits supplied by the live-plan configuration in the redesign brief.
 export const product = {
   name: "Renewables",
+  alternateSiteNames: ["Renewables by Cubelated", "renewables.cubelated.com"],
   webAppUrl: "https://app.renewables.cubelated.com/",
   googlePlayUrl:
     "https://play.google.com/store/apps/details?id=com.cubelated.renewly",

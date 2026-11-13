@@ -108,6 +108,7 @@ for (const page of pages) {
   const title = pageTitles[0][1];
   assert(html.includes(`<html lang="${page.language ?? "en"}">`), `${page.file} has an incorrect document language`);
   assert(metaContent(head, "property", "og:locale") === (page.ogLocale ?? "en_US"), `${page.file} has an incorrect social locale`);
+  assert(metaContent(head, "property", "og:site_name") === "Renewables", `${page.file} must identify the Renewables site`);
   const description = metaContent(head, "name", "description");
   assert(!titles.has(title), `${page.file} duplicates another page title`);
   assert(!descriptions.has(description), `${page.file} duplicates another page description`);
@@ -161,6 +162,10 @@ for (const page of pages) {
   if (page.structuredData) {
     assert(jsonLdMatches.length === 1, "Home page must contain one JSON-LD block");
     const graph = JSON.parse(jsonLdMatches[0][1])["@graph"];
+    const websites = graph.filter((entry) => entry["@type"] === "WebSite");
+    assert(websites.length === 1 && websites[0].name === "Renewables" && websites[0].url === "https://renewables.cubelated.com/", "Homepage must declare the preferred subdomain site name exactly once");
+    assert(JSON.stringify(websites[0].alternateName) === JSON.stringify(["Renewables by Cubelated", "renewables.cubelated.com"]), "Homepage site-name alternatives must retain the Renewables brand and subdomain");
+    assert(html.includes("Renewables by Cubelated"), "The alternate brand should agree with visible homepage attribution");
     const faq = graph.find((entry) => entry["@type"] === "FAQPage");
     assert(faq.mainEntity.length === 11, "All 11 FAQs must be present in structured data");
     for (const question of faq.mainEntity) {
@@ -327,6 +332,8 @@ for (const page of pages.filter((page) => page.robots.startsWith("index"))) {
 }
 
 const robots = await readFile(path.join(distDir, "robots.txt"), "utf8");
+const manifest = JSON.parse(await readFile(path.join(distDir, "site.webmanifest"), "utf8"));
+assert(manifest.name === "Renewables" && manifest.short_name === "Renewables", "Installed app names must agree with the preferred site brand");
 assert(
   robots.includes("Sitemap: https://renewables.cubelated.com/sitemap.xml"),
   "robots.txt must advertise the sitemap",

@@ -3,10 +3,9 @@ import { useEffect, useRef, useState } from "react";
 import { Brand, CtaLink } from "./shared";
 
 const navigation = [
-  ["Features", "#features"], ["How It Works", "#how-it-works"],
-  ["Calculator", "/tools/expiry-calculator"], ["Pricing", "#pricing"], ["FAQ", "#faq"],
+  ["Features", "#features"],
+  ["Date Calculator", "/tools/expiry-calculator"], ["Pricing", "#pricing"], ["FAQ", "#faq"],
   ["Resources", "/resources"],
-  ["Privacy", "/privacy"], ["Support", "/support"],
 ] as const;
 
 export default function Header() {

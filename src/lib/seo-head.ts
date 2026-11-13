@@ -1,5 +1,6 @@
 import { SOCIAL_IMAGE_URL } from "../seo";
 import type { PageSeo } from "../seo";
+import { product } from "../content/product";
 
 type HeadElement = { tag: "title" | "meta" | "link" | "script"; attributes: Record<string, string>; text?: string };
 
@@ -13,7 +14,7 @@ function headElements(seo: PageSeo): HeadElement[] {
     meta("name", "description", seo.description), meta("name", "robots", seo.robots),
     { tag: "link", attributes: { rel: "canonical", href: seo.canonical, "data-seo": "canonical" } },
     ...seo.alternates.map(({ language, url }): HeadElement => ({ tag: "link", attributes: { rel: "alternate", hreflang: language, href: url, "data-seo": "alternate" } })),
-    meta("property", "og:type", seo.pageType ?? "website"), meta("property", "og:site_name", "Renewables"),
+    meta("property", "og:type", seo.pageType ?? "website"), meta("property", "og:site_name", product.name),
     ...(seo.pageType === "article" && seo.modifiedOn ? [meta("property", "article:modified_time", seo.modifiedOn)] : []),
     meta("property", "og:locale", seo.ogLocale),
     ...seo.alternateLocales.map((locale) => meta("property", "og:locale:alternate", locale)),

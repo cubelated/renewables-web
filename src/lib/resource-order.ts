@@ -17,8 +17,9 @@ export function readDeviceTimeZone(): string | null {
   catch { return null; }
 }
 
-// Hydration and prerendering start with alphabetical order, regardless of the
-// build machine's zone. Device preferences are read only in the browser.
+// Hydration and prerendering start without a residence suggestion and with
+// alphabetical order, regardless of the build machine's zone. Device preferences
+// are read only in the browser.
 export const serverDeviceTimeZone = (): null => null;
 export function subscribeDeviceTimeZone(onChange: () => void): () => void {
   window.addEventListener("focus", onChange);

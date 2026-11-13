@@ -73,6 +73,8 @@ test("prerendering stays alphabetical independently of the build machine's time 
       const actual = [...html.matchAll(/data-guide="([^"]+)"/g)].map((match) => match[1]);
       assert.deepEqual(actual, ids(expected));
       assert(html.includes('data-resource-order="alphabetical"'));
+      assert.match(html, /id="resource-residence"[^>]*data-residence-source="unavailable"[^>]*><option value="" selected=""/);
+      assert(!html.includes("Suggested from your browser time zone"), "Static HTML must not infer a visitor residence");
     }
   } finally { if (previous === undefined) delete process.env.TZ; else process.env.TZ = previous; }
 });

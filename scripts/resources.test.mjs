@@ -20,6 +20,26 @@ after(async () => { await server?.close(); });
 const match = (filters) => catalog.findGuides({ ...catalog.emptyFilters, ...filters }).map((guide) => guide.id);
 const render = (path) => renderToString(createElement(App, { path }));
 
+test("the subdomain has one consistent Renewables site-name preference rather than the parent domain", async () => {
+  const website = (path) => seo.getPageSeo(path).structuredData?.["@graph"].filter((entry) => entry["@type"] === "WebSite") ?? [];
+  const primary = website("/");
+  assert.equal(primary.length, 1);
+  assert.equal(primary[0].name, "Renewables");
+  assert.equal(primary[0].url, "https://renewables.cubelated.com/");
+  assert.deepEqual(primary[0].alternateName, ["Renewables by Cubelated", "renewables.cubelated.com"]);
+  for (const path of seo.INDEXED_PATHS) {
+    const entries = website(path);
+    assert(entries.length <= 1);
+    if (entries.length) assert.deepEqual(entries[0].alternateName, primary[0].alternateName);
+    assert(renderSeoHead(seo.getPageSeo(path)).includes('property="og:site_name" content="Renewables"'));
+  }
+  assert(render("/").includes("Renewables by Cubelated"));
+  const manifest = JSON.parse(await readFile("public/site.webmanifest", "utf8"));
+  assert.equal(manifest.name, "Renewables");
+  assert.equal(manifest.short_name, "Renewables");
+  assert((await readFile("index.html", "utf8")).includes('name="application-name" content="Renewables"'));
+});
+
 test("passport matching separates citizenship, residence, and issuing authority", () => {
   assert.deepEqual(match({ nationality: "ID", residence: "TW", document: "passport" }), ["id-passport-tw"]);
   assert.deepEqual(match({ nationality: "TW", residence: "TW", document: "passport" }), ["tw-passport-domestic"]);

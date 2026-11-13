@@ -12,9 +12,17 @@ import WorkforceCountryNotes from "../components/resources/WorkforceCountryNotes
 import { workforceSources } from "../content/resources/workforce-sources";
 import EditorialPolicy from "../components/resources/EditorialPolicy";
 
+type FinderSelection = { filters: ResourceFilters; residenceSource: "device" | "suggestion" | "visitor" };
+
 export default function ResourceDirectoryPage({ language = "en" }: { language?: ResourceLanguage }) {
-  const [filters, setFilters] = useState<ResourceFilters>({ ...emptyFilters });
+  const [selection, setSelection] = useState<FinderSelection>({ filters: { ...emptyFilters }, residenceSource: "device" });
   const deviceTimeZone = useSyncExternalStore(subscribeDeviceTimeZone, readDeviceTimeZone, serverDeviceTimeZone);
+  const deviceResidence = residenceForTimeZone(deviceTimeZone);
+  // A null server snapshot keeps prerendering and hydration unpersonalized. The
+  // first finder interaction captures the suggestion so later zone changes cannot
+  // replace a selection while someone is using the form.
+  const filters: ResourceFilters = { ...selection.filters, residence: selection.residenceSource === "device" ? deviceResidence ?? "" : selection.filters.residence };
+  const residenceSuggested = selection.residenceSource === "suggestion" || selection.residenceSource === "device" && Boolean(deviceResidence);
   const orderingTimeZone = filters.residence ? null : deviceTimeZone;
   const suggestedResidence = residenceForTimeZone(orderingTimeZone);
   const suggestedResidenceName = countries.find((country) => country.code === suggestedResidence)?.names[language];
@@ -27,7 +35,7 @@ export default function ResourceDirectoryPage({ language = "en" }: { language?: 
   function update(next: Partial<ResourceFilters>) {
     const updated = { ...filters, ...next };
     if (!needsResidenceStatus(updated)) updated.status = "";
-    setFilters(updated);
+    setSelection({ filters: updated, residenceSource: next.residence === undefined && residenceSuggested ? "suggestion" : "visitor" });
   }
   return <ResourceLayout language={language}>
     <main id="resource-main" className="resource-container">
@@ -42,11 +50,11 @@ export default function ResourceDirectoryPage({ language = "en" }: { language?: 
       <form className="resource-finder" aria-label={t.name} onSubmit={(event) => event.preventDefault()}>
         <div className="resource-filter-grid">
           <div className="resource-field"><label htmlFor="resource-nationality">{t.nationality}</label><select id="resource-nationality" value={filters.nationality} onChange={(event) => update({ nationality: event.target.value })}><option value="">{t.all}</option>{countries.map((country) => <option key={country.code} value={country.code}>{country.names[language]}</option>)}</select></div>
-          <div className="resource-field"><label htmlFor="resource-residence">{t.residence}</label><select id="resource-residence" value={filters.residence} onChange={(event) => update({ residence: event.target.value })}><option value="">{t.all}</option>{countries.map((country) => <option key={country.code} value={country.code}>{country.names[language]}</option>)}</select></div>
+          <div className="resource-field"><label htmlFor="resource-residence">{t.residence}</label><select id="resource-residence" value={filters.residence} aria-describedby="resource-residence-help" data-residence-source={residenceSuggested ? "time-zone" : selection.residenceSource === "device" ? "unavailable" : "manual"} onChange={(event) => update({ residence: event.target.value })}><option value="">{t.all}</option>{countries.map((country) => <option key={country.code} value={country.code}>{country.names[language]}</option>)}</select><p id="resource-residence-help" className="resource-small">{residenceSuggested ? orderCopy.residenceSuggested : orderCopy.residenceHelp}</p></div>
           <div className="resource-field"><label htmlFor="resource-document">{t.document}</label><select id="resource-document" value={filters.document} onChange={(event) => update({ document: event.target.value as DocumentCategory | "" })}><option value="">{t.all}</option>{Object.entries(t.documents).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></div>
           {hasStatus && <div className="resource-field"><label htmlFor="resource-status">{t.status}</label><select id="resource-status" value={filters.status} onChange={(event) => update({ status: event.target.value as ResidenceStatus | "" })}><option value="">{t.all}</option>{Object.entries(t.statuses).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></div>}
         </div>
-        <div className="resource-search-row"><div className="resource-field"><label htmlFor="resource-search"><Search size={15} aria-hidden="true" />{t.search}</label><input id="resource-search" type="search" autoComplete="off" value={filters.query} placeholder={t.searchHint} onChange={(event) => update({ query: event.target.value })} /></div><button className="resource-button" type="button" onClick={() => setFilters({ ...emptyFilters })}><RotateCcw size={15} aria-hidden="true" />{t.reset}</button></div>
+        <div className="resource-search-row"><div className="resource-field"><label htmlFor="resource-search"><Search size={15} aria-hidden="true" />{t.search}</label><input id="resource-search" type="search" autoComplete="off" value={filters.query} placeholder={t.searchHint} onChange={(event) => update({ query: event.target.value })} /></div><button className="resource-button" type="button" onClick={() => setSelection({ filters: { ...emptyFilters }, residenceSource: "visitor" })}><RotateCcw size={15} aria-hidden="true" />{t.reset}</button></div>
         <p className="resource-small">{t.privacy}</p>
       </form>
       <p className="resource-scope-note">{t.foreignScope}</p>

@@ -82,27 +82,69 @@ try {
   const key = async (key, code, vk) => { await call("Input.dispatchKeyEvent", { type: "keyDown", key, code, windowsVirtualKeyCode: vk }); await call("Input.dispatchKeyEvent", { type: "keyUp", key, code, windowsVirtualKeyCode: vk }); await pause(60); };
   await call("Page.enable"); await call("Runtime.enable"); await call("Network.enable");
   await call("Page.addScriptToEvaluateOnNewDocument", { source: "window.__resourceGeolocationCalls=0;Object.defineProperty(navigator,'geolocation',{get(){window.__resourceGeolocationCalls++;throw new Error('Resource finder must not request geolocation')}});" });
-  // Region priority is based on the named zone, never the shared UTC offset.
-  for (const [timezoneId, expected, hint] of [
-    ["Asia/Taipei", ["id-passport-tw", "id-passport-domestic"], "TW"],
-    ["Asia/Jakarta", ["id-passport-domestic", "id-passport-tw"], "ID"],
-    ["Asia/Jayapura", ["id-passport-domestic", "id-passport-tw"], "ID"],
-    ["UTC", ["id-passport-domestic", "id-passport-tw"], "alphabetical"],
-    ["Asia/Shanghai", ["id-passport-domestic", "id-passport-tw"], "alphabetical"],
+  // Prefill only an explicitly mapped residence, never citizenship or status.
+  for (const [timezoneId, expected, residence] of [
+    ["Asia/Taipei", ["id-passport-tw"], "TW"],
+    ["Asia/Jakarta", ["id-passport-domestic"], "ID"],
+    ["Asia/Jayapura", ["id-passport-domestic"], "ID"],
+    ["UTC", ["id-passport-domestic", "id-passport-tw"], ""],
+    ["Asia/Shanghai", ["id-passport-domestic", "id-passport-tw"], ""],
   ]) {
     await call("Emulation.setTimezoneOverride", { timezoneId }); await navigate("/resources");
     assert.equal(await evaluate("document.getElementById('resource-nationality').value"), "");
+    assert.equal(await evaluate("document.getElementById('resource-residence').dataset.residenceSource"), residence ? "time-zone" : "unavailable");
     await change("resource-nationality", "ID"); await change("resource-document", "passport"); assert.deepEqual(await cards(), expected, timezoneId);
-    assert.equal(await evaluate("document.querySelector('[data-resource-order]').dataset.resourceOrder"), hint);
+    assert.equal(await evaluate("document.querySelector('[data-resource-order]').dataset.resourceOrder"), "alphabetical");
     assert.equal(await evaluate("document.getElementById('resource-nationality').value"), "ID");
-    assert.equal(await evaluate("document.getElementById('resource-residence').value"), "");
+    assert.equal(await evaluate("document.getElementById('resource-residence').value"), residence);
+    assert.equal(await evaluate("document.getElementById('resource-residence').dataset.residenceSource"), residence ? "time-zone" : "manual");
+    assert.equal(await evaluate("document.getElementById('resource-status')?.value??''"), "");
+    await assertAlphabeticalCards();
     assert.equal(await evaluate("window.__resourceGeolocationCalls"), 0);
   }
+  await call("Emulation.setTimezoneOverride", { timezoneId: "Asia/Taipei" }); await navigate("/resources");
+  await change("resource-document", "arc"); await change("resource-status", "student");
+  await call("Emulation.setTimezoneOverride", { timezoneId: "Asia/Jakarta" });
+  await evaluate("window.dispatchEvent(new Event('focus'));document.dispatchEvent(new Event('visibilitychange'))"); await pause(80);
+  assert.equal(await evaluate("document.getElementById('resource-residence').value"), "TW", "A device-setting change must not replace a residence while using the finder");
+  assert.equal(await evaluate("document.getElementById('resource-status').value"), "student");
   await call("Emulation.setTimezoneOverride", { timezoneId: "Asia/Jakarta" }); await navigate("/resources");
   await change("resource-residence", "TW"); await assertAlphabeticalCards();
   assert.equal(await evaluate("document.querySelector('[data-resource-order]').dataset.resourceOrder"), "alphabetical");
   await change("resource-language", "id-ID"); await assertAlphabeticalCards();
   await change("resource-language", "zh-TW"); await assertAlphabeticalCards();
+  assert.equal(await evaluate("document.getElementById('resource-residence').value"), "TW");
+  // Explicit choices, including a blank choice and reset, survive focus changes
+  // and locale navigation. Only a new visit starts a fresh browser suggestion.
+  await call("Emulation.setTimezoneOverride", { timezoneId: "Asia/Taipei" });
+  await evaluate("window.dispatchEvent(new Event('focus'));document.dispatchEvent(new Event('visibilitychange'))");
+  assert.equal(await evaluate("document.getElementById('resource-residence').value"), "TW");
+  for (const [route, phrase] of [["/resources", "browser time zone"], ["/id/resources", "zona waktu browser"], ["/zh-tw/resources", "瀏覽器時區"]]) {
+    await navigate(route);
+    assert.equal(await evaluate("document.getElementById('resource-residence').value"), "TW");
+    assert(await evaluate(`document.getElementById('resource-residence-help').textContent.includes(${JSON.stringify(phrase)})`));
+    assert.equal(await evaluate("document.getElementById('resource-residence').getAttribute('aria-describedby')"), "resource-residence-help");
+    await call("Emulation.setDeviceMetricsOverride", { width: 320, height: 900, deviceScaleFactor: 1, mobile: false });
+    assert(await evaluate("document.documentElement.scrollWidth<=innerWidth"), `Residence suggestion overflow: ${route} at 320px`);
+    const prefillScreenshot = await call("Page.captureScreenshot", { format: "png", captureBeyondViewport: false });
+    await writeFile(path.join(output, `resources-prefill-${route.replaceAll('/', '_')}-320.png`), Buffer.from(prefillScreenshot.data, "base64"));
+    await call("Emulation.setDeviceMetricsOverride", { width: 1440, height: 900, deviceScaleFactor: 1, mobile: false });
+    await change("resource-residence", "");
+    await evaluate("window.dispatchEvent(new Event('focus'));document.dispatchEvent(new Event('visibilitychange'))");
+    await change("resource-nationality", "ID"); await change("resource-document", "passport");
+    assert.equal(await evaluate("document.getElementById('resource-residence').value"), "");
+    assert.deepEqual(new Set(await cards()), new Set(["id-passport-domestic", "id-passport-tw"]));
+    assert.equal(await evaluate("document.querySelector('[data-resource-order]').dataset.resourceOrder"), "TW");
+    await change("resource-language", "en");
+    assert.equal(await evaluate("document.getElementById('resource-residence').value"), "");
+    await evaluate("document.querySelector('.resource-search-row button').click()"); await pause(80);
+    assert.equal((await cards()).length, guideCount);
+    assert.equal(await evaluate("document.getElementById('resource-residence').value"), "");
+    await call("Emulation.setTimezoneOverride", { timezoneId: "Asia/Jakarta" });
+    await evaluate("window.dispatchEvent(new Event('focus'));document.dispatchEvent(new Event('visibilitychange'))");
+    assert.equal(await evaluate("document.getElementById('resource-residence').value"), "");
+    await call("Emulation.setTimezoneOverride", { timezoneId: "Asia/Taipei" });
+  }
   await call("Emulation.setTimezoneOverride", { timezoneId: "UTC" });
   // Country notes explain absent procedures without borrowing another country's
   // checklist, and teacher/Hong Kong routes remain status-specific.
@@ -195,14 +237,29 @@ try {
   await navigate("/resources"); assert(await evaluate("matchMedia('(prefers-reduced-motion:reduce)').matches"));
   assert.equal(await evaluate("document.querySelector('#resource-nationality').value"), "");
   assert.equal(await evaluate("window.__resourceGeolocationCalls"), 0);
-  const resourceApiRequests = events.filter((event) => event.method === "Network.requestWillBeSent" && ["XHR", "Fetch"].includes(event.params.type));
-  assert.deepEqual(resourceApiRequests, [], "Finder and checklists must not issue API requests");
+  const networkRequests = events.filter((event) => event.method === "Network.requestWillBeSent" && ["XHR", "Fetch"].includes(event.params.type));
+  // The production edge injects its own RUM/security scripts. Accept only their
+  // exact same-origin endpoints AND matching initiators; local checks stay strict.
+  const isCloudflareRequest = (event) => {
+    if (base !== "https://renewables.cubelated.com") return false;
+    const destination = new URL(event.params.request.url);
+    if (destination.origin !== base) return false;
+    const scripts = (event.params.initiator?.stack?.callFrames ?? []).map((frame) => frame.url);
+    return destination.pathname === "/cdn-cgi/rum" && scripts.some((url) => url.startsWith("https://static.cloudflareinsights.com/beacon.min.js/")) ||
+      destination.pathname.startsWith("/cdn-cgi/challenge-platform/") && scripts.some((url) => url.startsWith(`${base}/cdn-cgi/challenge-platform/`));
+  };
+  const platformRequests = networkRequests.filter(isCloudflareRequest);
+  const resourceApiRequests = networkRequests.filter((event) => !isCloudflareRequest(event));
+  assert.deepEqual(resourceApiRequests.map((event) => ({ url: event.params.request.url, initiator: event.params.initiator?.stack?.callFrames?.[0]?.url })), [], "Finder and checklists must not issue API requests");
+  for (const event of platformRequests.filter((event) => new URL(event.params.request.url).pathname === "/cdn-cgi/rum")) {
+    assert(!/"(?:nationality|citizenship|residenceStatus|resource-nationality|resource-status|resource-search)"\s*:|KDEI passport/i.test(event.params.request.postData ?? ""), "Cloudflare analytics must not receive finder selections or search text");
+  }
   const errors = events.filter((event) => event.method === "Runtime.exceptionThrown" || event.method === "Runtime.consoleAPICalled" && /hydration|Minified React error/i.test(JSON.stringify(event.params)));
   assert.deepEqual(errors, []);
   await call("Emulation.setScriptExecutionDisabled", { value: true });
   await navigate("/resources/taiwan-arc-extension-students");
   assert(await evaluate("document.querySelector('#checklist').textContent.includes('enrollment')"));
-  const report = { http: `All ${paths.length} sitemap routes GET/HEAD 200; missing translations/guides 404; trailing slash redirect; query canonical stable`, layouts, checks: ["time-zone priority then alphabetical order", "unsupported and shared-offset zone fallback", "explicit residence overrides device hint", "localized title ordering", "no geolocation access or inferred nationality", "nationality and residence matching", "conditional student/worker status", "country notes with keyboard disclosure", "Hong Kong/Macao status-specific routing", "separate teacher procedures", "unsupported document empty states", "reset", "keyword search", "language independence", "localized SEO, URL, history and refresh", "translated guide language links", "native select keyboard input", "Tab/Enter and visible focus", "official links", "ephemeral checkboxes", "no XHR/fetch requests", "reduced motion", "direct navigation and refresh", "content without JavaScript"], errors };
+  const report = { base, http: `All ${paths.length} sitemap routes GET/HEAD 200; missing translations/guides 404; trailing slash redirect; query canonical stable`, layouts, platformRequests: { analytics: platformRequests.filter((event) => new URL(event.params.request.url).pathname === "/cdn-cgi/rum").length, security: platformRequests.filter((event) => new URL(event.params.request.url).pathname.startsWith("/cdn-cgi/challenge-platform/")).length }, checks: ["browser time-zone residence prefill", "unsupported and shared-offset zone fallback", "explicit residence and clear override device suggestion", "reset stays blank after focus and time-zone changes", "prefill help in all three locales", "time-zone priority then alphabetical order when cleared", "localized title ordering", "no geolocation access or inferred nationality", "nationality and residence matching", "conditional student/worker status", "country notes with keyboard disclosure", "Hong Kong/Macao status-specific routing", "separate teacher procedures", "unsupported document empty states", "reset", "keyword search", "language independence", "localized SEO, URL, history and refresh", "translated guide language links", "native select keyboard input", "Tab/Enter and visible focus", "official links", "ephemeral checkboxes", "no application XHR/fetch requests", "reduced motion", "direct navigation and refresh", "content without JavaScript"], errors };
   await writeFile(path.join(output, "resources-browser-results.json"), JSON.stringify(report, null, 2));
   console.log(JSON.stringify({ ...report, layouts: report.layouts.length, widths: [320, 375, 768, 1440] }, null, 2));
 } finally {

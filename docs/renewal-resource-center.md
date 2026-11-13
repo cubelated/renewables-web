@@ -100,15 +100,18 @@ foreign-national ARC/APRC scope excludes TW/CN/HK/MO; separate Gold Card and
 student-permit definitions retain their own exclusions. Hong Kong/Macao existing
 work-based resident permits have a separate reviewed guide. The directory explains
 these distinctions. No citizenship, eligibility, or immigration status is inferred
-from interface language, IP, browser locale, or time zone. The optional residence
-hint affects only ordering, as described below; it never sets a filter.
+from interface language, IP, browser locale, or time zone. A recognized browser
+time zone preselects an approximate residence after hydration, with localized
+help asking the visitor to check or change it. This is a convenience suggestion,
+not verified physical location or immigration eligibility.
 
 Blank filters mean browse all reviewed guides, not an inferred user profile.
 Keyword search intersects the other filters and searches published translations,
 scope, authority, and aliases. Status is shown only when it affects the selected
 document and matching scope: for example ARC, NHI, work, and health certificates.
 Changing away from that combination clears its hidden status. Reset clears all
-filters; changing interface language preserves them. Unsupported combinations
+filters and disables residence preselection for the rest of that visit; changing
+interface language preserves them. Unsupported combinations
 display an honest empty state. Temporarily unavailable and incomplete-research
 records have distinct generic messages; their unpublished instructions stay
 hidden. Taiwan ARC empty states offer NIA's general residence information, with
@@ -116,7 +119,16 @@ the distinct Hong Kong/Macao source used for those regional cases. These links
 are clearly distinguished from a matching guide. Draft and
 unavailable guides never appear as results. There is no generated live advice.
 
-### Guide ordering
+### Browser residence suggestion and guide ordering
+
+On a fresh directory visit, `Asia/Taipei` preselects Taiwan and Indonesia's named
+zones preselect Indonesia. Unknown, hidden, or unmapped zones leave residence
+blank. Nationality and residence status are never preselected. The first finder
+interaction captures the current suggestion, so later focus/time-zone changes
+cannot replace a residence while the visitor is using the form. Choosing or
+clearing residence overrides the suggestion; Reset clears it without immediately
+prefilling again. Locale navigation preserves these choices. A reload starts a
+fresh suggestion, without restoring any earlier private selections.
 
 After filtering, results sort first by a supported residence hint from the
 browser's named time zone, then alphabetically by the displayed title within both
@@ -126,16 +138,19 @@ groups. English fallback titles are included in the active interface language's
 `src/lib/resource-order.ts` explicitly maps `Asia/Taipei` to TW and Indonesia's
 named zones to ID, including older aliases. UTC, unrecognized zones, and shared
 offsets are inconclusive and yield alphabetical order for all results. No IP,
-language, or UTC-offset inference is used. Selecting a residence disables the
-approximate device hint: the explicitly filtered results sort alphabetically.
+language, or UTC-offset inference is used. A selected residence (suggested or
+chosen) filters the results, which then sort alphabetically. When residence is
+cleared, the original time-zone-first ordering still applies to all matched guides.
 The helper reorders a copy of the matched results and never changes eligibility,
 publishes a draft, or adds a guide that failed matching.
 
-The localized order note explains the approximate hint. Server rendering and
-hydration begin alphabetically, independent of the build/server time zone;
+Localized residence help and the order note explain the approximate hint. Server
+rendering and hydration begin with blank filters and all published guides sorted
+alphabetically, independent of the build/server time zone;
 `useSyncExternalStore` reads the device preference after hydration and refreshes
-it when the tab becomes visible or focused. This also keeps static HTML useful
-without JavaScript. When adding another supported residence, add only verified
+it when the tab becomes visible or focused. This only affects residence while the
+finder is untouched; ordering may still update after a visitor clears residence.
+Static HTML remains useful without JavaScript. When adding another supported residence, add only verified
 named-zone mappings and exclusion/fallback tests; do not infer a nationality.
 
 ## Editorial standards and review checklist
@@ -291,7 +306,8 @@ directory canonical. Unknown paths get noindex metadata and a real asset 404.
 
 Filters, search terms, and checkbox state remain in React/native page memory.
 There is no local/session storage, analytics event, precise location, document
-upload, or backend request. Reloading clears selections. CTAs use the existing
+upload, or backend request. Reloading clears private selections and makes a fresh
+time-zone residence suggestion when supported. CTAs use the existing
 product destinations without attaching filter data. Authority links use fixed,
 validated URLs, `noopener noreferrer`, and no referrer. The optional correction
 link opens an email draft containing public guide metadata only; the visitor
@@ -302,7 +318,10 @@ The browser time zone is read locally through
 It is an approximate device setting, not verified physical location. The finder
 never invokes Geolocation or the Permissions API, requests a location prompt,
 calls an IP-location service, or persists/transmits the inferred residence.
-Time-zone ordering does not change source review dates or SEO URLs.
+Time-zone preselection and ordering do not change guide source-review dates or SEO
+URLs. All directory locale modification dates are explicitly set to 2026-11-13 for
+this interface change; guide review dates remain unchanged. No filter URL or
+personalized structured data is generated.
 
 ## Verification and local preview
 
@@ -372,16 +391,19 @@ Confirm sitemap/canonical values and HTTP 404 behavior on the public hostname.
 | --- | --- |
 | `npm ci --cache .npm` | Passed; used a workspace cache and authorized network access after restricted installation attempts failed. Dependency versions and lockfile are unchanged. |
 | `npm run lint` | Passed with zero errors; two existing unused-disable warnings in generated `worker-configuration.d.ts`. |
-| `npm run test` | 97 passed, zero failures or skips, covering the resource catalog, workforce research, device-zone ordering, localized SEO, discovery schema and crawler exclusions. |
+| Automated tests | 98 passed with `node --test --test-concurrency=1 scripts/*.test.mjs`, zero failures or skips. The first parallel run hit a Vite module-loading timeout; the complete suite was rerun one file at a time. Coverage includes site-name consistency, the catalog, workforce research, ordering, localized SEO, discovery schema and crawler exclusions. |
 | `npm run build` | Passed: TypeScript, client build, SSR build, prerender. Also rerun successfully through the final `check`. |
-| `npm run check` | Passed: production build, SEO validation of 66 HTML documents, and Wrangler deployment dry run with a workspace log path. Vite reports a 560.17 kB minified entry chunk (171.16 kB gzip); the in-memory catalog remains bundled, with no new dependencies. |
+| `npm run check` | Passed: production build, SEO validation of 66 HTML documents, and Wrangler deployment dry run with a workspace log path. Vite reports a 560.25 kB minified entry chunk (171.21 kB gzip); the in-memory catalog remains bundled, with no new dependencies. |
 | `npm run check:discovery` | Passed against all 65 production sitemap URLs and all 65 local-preview URLs: no HTTP, robots, canonical, language, indexing-header or snippet exclusions detected. This is HTTP/robots verification, not proof of indexing or access from actual provider crawler IPs. |
+| Approved production deployment | Completed 2026-11-13 (Asia/Taipei) using `npm run deploy`; Cloudflare version `99ec9822-8823-430b-9bab-f5fc6cd938de`. The post-deployment discovery audit passed all 65 live URLs. |
+| Site-name correction deployment | Explicitly approved and deployed 2026-11-13, version `657d0eac-7b61-4a15-904f-dd76605a7cd8`. Preferred/alternate names, manifest, footer and bundle verified live; all 65 public URLs passed the discovery audit. |
+| Production browser verification | Passed all 80 layouts and functional/localized-SEO checks on the public hostname. Zero application XHR/fetch requests or runtime/hydration errors; Cloudflare-injected analytics/security requests reported separately. |
 | `npm run resources:sources` | Passed structural publication/source checks and printed the recorded access inventory. No claim that every source was directly accessible. |
 | `npm run test:resources:browser` | Passed on the final build using installed headless Chrome and temporary Wrangler 4.160.1. All 65 sitemap routes GET/HEAD 200; unknown guides and unpublished translations 404; trailing slash redirect; stable query canonical. |
 | Resource browser layout checks | 80 route/width combinations at 320, 375, 768, and 1440px; no horizontal overflow, runtime exceptions, or hydration errors. Filtering (including professional, overseas-student, NHI, graduate work and national-ID cases), search, reset, language independence, keyboard selection/Tab/Enter, visible focus, official link attributes, reload, reduced motion, no API requests, and no-JavaScript guide content passed. |
 | Workforce browser checks | Passed: Vietnam passport gap and official referral, Canadian passport match, Hong Kong/Macao status-specific residence routing and fallback, separate teacher results, native source disclosure with Space, and 320px country-note layout. |
 | Localized SEO browser checks | Language selection, Back/Forward and refresh keep the URL, visible language and full search/social/schema metadata synchronized with the prerendered HTML. Filters survive language navigation and clear on refresh. Reviewed guide-language links use their own localized SEO; English fallback links retain English URLs. |
-| Device-zone browser checks | Passed with Asia/Taipei, Asia/Jakarta, Asia/Jayapura, UTC, and Asia/Shanghai overrides: region priority followed by alphabetical order, unknown/shared-offset fallback, explicit-residence override, and localized title ordering. Instrumented Geolocation access remained zero; no inferred filter selections or API requests, and no hydration errors. |
+| Device-zone browser checks (before residence preselection) | Passed with Asia/Taipei, Asia/Jakarta, Asia/Jayapura, UTC, and Asia/Shanghai overrides: region priority followed by alphabetical order, unknown/shared-offset fallback, explicit-residence override, and localized title ordering. Instrumented Geolocation access remained zero; no inferred filter selections or API requests, and no hydration errors. See the 2026-11-13 interface update below for current behavior. |
 | `npm run test:browser` | Existing calculator/homepage regression suite passed: 48 layouts, three calculator languages, keyboard behavior, date calculations, no private URL/storage/API side effects, and JavaScript-free explanations. |
 | Visual inspection | Initial directory/passport/Chinese ARC screenshots, expanded desktop Gold Card, mobile dental, Traditional Chinese directory, desktop Canadian passport, mobile tutorial-school teacher and mobile US country-note screenshots inspected. Images/results are local ignored `.qa/` artifacts. |
 | `git diff --check` | Passed; only repository line-ending conversion notices. Sitemap source snapshot matches generated output. |
@@ -398,6 +420,40 @@ all 97 tests.
 `npm ci` reported 18 audit findings in the existing locked dependency tree
 (1 low, 9 moderate, 8 high). Dependency remediation was not part of this content
 feature and no automatic version upgrades were applied.
+
+## Residence preselection update — 2026-11-13
+
+The directory now preselects Taiwan or Indonesia from a recognized browser time
+zone. The suggestion is approximate, local, editable, and independent of nationality,
+status, and interface language. English, Indonesian, and Traditional Chinese help
+text explains the suggestion. Clearing residence and Reset stay cleared, including
+after focus, time-zone changes, and locale navigation. Starting to use another
+finder field also captures the residence, preventing later device-setting changes
+from replacing it while the form is in use.
+
+Executed for this update:
+
+- All 98 automated tests passed with
+  `node --test --test-concurrency=1 scripts/*.test.mjs`.
+- `npm run lint` passed with the two existing generated-file warnings.
+- `npm run check` passed the production build, all 66 prerendered HTML SEO checks,
+  and the Cloudflare deployment dry run. The entry bundle is 561.46 kB minified
+  (171.68 kB gzip); no dependencies were added.
+- `npm run test:resources:browser` passed on local Cloudflare with installed
+  Chrome and temporary Wrangler 4.160.1. It checked five time-zone overrides,
+  approximate preselection and fallback, nationality/status independence, manual
+  override/clear/reset, in-progress selections surviving a zone change, all three
+  locales, keyboard controls, direct routes, and stable localized SEO.
+- All 65 sitemap routes returned GET/HEAD 200; missing guides/translations returned
+  404. All 80 route/width checks passed, plus 320px preselection checks in all three
+  languages. There were zero geolocation accesses, application XHR/fetch requests,
+  or runtime/hydration errors. English and Traditional Chinese preselection
+  screenshots were visually inspected.
+- The public sitemap matches generated output. Directory modification dates
+  record this interface update; guide source-review dates are unchanged.
+
+This preselection update is verified locally and has not been deployed. Earlier
+production deployment records above describe the versions preceding this update.
 
 ## Files in this change
 
